@@ -71,6 +71,10 @@ TEMPLATES = [
     },
 ]
 
+LOGIN_URL = '/auth/login/'
+LOGIN_REDIRECT_URL = '/reportes/mis-reportes/'   # temporal hasta T-17
+LOGOUT_REDIRECT_URL = '/'
+
 WSGI_APPLICATION = 'config.wsgi.application'
 
 

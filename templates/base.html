@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}SabanaLimpia{% endblock %} — Sabana Centro</title>
+
+  {% load static %}
+
+  <!-- Google Fonts: DM Serif Display + DM Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Tokens globales ────────────────────────────────── */
+    :root {
+      --verde:        #2d6a4f;
+      --verde-claro:  #52b788;
+      --verde-palido: #d8f3dc;
+      --tierra:       #b7791f;
+      --arena:        #fefae0;
+      --gris-texto:   #1b2a1e;
+      --gris-suave:   #6b7f6d;
+      --blanco:       #ffffff;
+      --sombra:       0 4px 24px rgba(45,106,79,.12);
+      --radio:        12px;
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body:    'DM Sans', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--gris-texto);
+      background: var(--arena);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a { color: var(--verde); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Navbar ─────────────────────────────────────────── */
+    .navbar {
+      background: var(--verde);
+      padding: .9rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(0,0,0,.15);
+    }
+    .navbar__logo {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--blanco);
+      letter-spacing: -.01em;
+    }
+    .navbar__logo span { color: var(--verde-claro); }
+    .navbar__links { display: flex; gap: 1.2rem; align-items: center; }
+    .navbar__links a {
+      color: rgba(255,255,255,.85);
+      font-size: .9rem;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .navbar__links a:hover { color: var(--blanco); text-decoration: none; }
+    .navbar__links .btn-nav {
+      background: var(--verde-claro);
+      color: var(--verde) !important;
+      padding: .4rem .9rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .navbar__links .btn-nav:hover { background: #74c69d; }
+
+    /* ── Mensajes flash ─────────────────────────────────── */
+    .messages { list-style: none; padding: .8rem 1.5rem; }
+    .messages li {
+      padding: .75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: .5rem;
+      font-size: .9rem;
+      font-weight: 500;
+    }
+    .messages .success { background: #d8f3dc; color: #1b4332; border-left: 4px solid var(--verde-claro); }
+    .messages .error   { background: #fde8e8; color: #7f1d1d; border-left: 4px solid #f87171; }
+    .messages .info    { background: #dbeafe; color: #1e3a8a; border-left: 4px solid #60a5fa; }
+    .messages .warning { background: #fef3c7; color: #92400e; border-left: 4px solid #fbbf24; }
+
+    /* ── Contenido principal ────────────────────────────── */
+    .main { flex: 1; }
+
+    /* ── Footer ─────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 1.2rem;
+      font-size: .8rem;
+      color: var(--gris-suave);
+      border-top: 1px solid #d4edda;
+    }
+
+    {% block extra_styles %}{% endblock %}
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="/" class="navbar__logo">Sabana<span>Limpia</span></a>
+    <div class="navbar__links">
+      <a href="/reportes/mapa/">Mapa de reportes</a>
+      <a href="/residuos/estadisticas/">Estadísticas</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'usuarios:logout' %}"
+           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+          Cerrar sesión
+        </a>
+        <form id="logout-form" action="{% url 'usuarios:logout' %}" method="post" hidden>
+          {% csrf_token %}
+        </form>
+      {% else %}
+        <a href="{% url 'usuarios:login' %}">Iniciar sesión</a>
+        <a href="{% url 'usuarios:registro' %}" class="btn-nav">Regístrate</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- Mensajes flash (success, error, info, warning) -->
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <!-- Contenido de cada página -->
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    © {% now "Y" %} SabanaLimpia — Sabana Centro, Cundinamarca
+  </footer>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

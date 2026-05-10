@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}Crear cuenta{% endblock %}
+
+{% block extra_styles %}
+/* ── Layout de auth ─────────────────────────────────── */
+.auth-wrapper {
+  min-height: calc(100vh - 120px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Panel izquierdo — decorativo */
+.auth-panel {
+  background: var(--verde);
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.auth-panel::before {
+  content: '';
+  position: absolute;
+  width: 340px; height: 340px;
+  border-radius: 50%;
+  background: rgba(82,183,136,.18);
+  top: -80px; right: -80px;
+}
+.auth-panel::after {
+  content: '';
+  position: absolute;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(82,183,136,.12);
+  bottom: 40px; left: -60px;
+}
+.auth-panel__heading {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  color: var(--blanco);
+  line-height: 1.15;
+  position: relative;
+  z-index: 1;
+}
+.auth-panel__heading em {
+  font-style: italic;
+  color: var(--verde-claro);
+}
+.auth-panel__sub {
+  color: rgba(255,255,255,.75);
+  margin-top: 1rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+.auth-panel__features {
+  list-style: none;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+  position: relative;
+  z-index: 1;
+}
+.auth-panel__features li {
+  color: rgba(255,255,255,.85);
+  font-size: .9rem;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+.auth-panel__features li::before {
+  content: '✓';
+  background: var(--verde-claro);
+  color: var(--verde);
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Panel derecho — formulario */
+.auth-form-wrapper {
+  background: var(--blanco);
+  padding: 3rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-y: auto;
+}
+.auth-form-wrapper h2 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--gris-texto);
+  margin-bottom: .3rem;
+}
+.auth-form-wrapper .auth-subtitle {
+  color: var(--gris-suave);
+  font-size: .9rem;
+  margin-bottom: 2rem;
+}
+.auth-form-wrapper .auth-subtitle a {
+  color: var(--verde);
+  font-weight: 600;
+}
+
+/* ── Form grid (2 columnas para nombre/apellido) ─────── */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  margin-bottom: 1rem;
+}
+.form-group.full { grid-column: 1 / -1; }
+.form-group label {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--gris-texto);
+}
+.form-group label .required { color: var(--tierra); margin-left: 2px; }
+
+.form-input {
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  padding: .65rem .9rem;
+  font-family: var(--font-body);
+  font-size: .95rem;
+  color: var(--gris-texto);
+  transition: border-color .2s, box-shadow .2s;
+  background: #fafafa;
+  width: 100%;
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--verde-claro);
+  box-shadow: 0 0 0 3px rgba(82,183,136,.2);
+  background: var(--blanco);
+}
+.form-input.error-input { border-color: #f87171; }
+
+.field-help {
+  font-size: .78rem;
+  color: var(--gris-suave);
+}
+.field-error {
+  font-size: .8rem;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+/* ── Botón principal ─────────────────────────────────── */
+.btn-primary {
+  width: 100%;
+  background: var(--verde);
+  color: var(--blanco);
+  border: none;
+  border-radius: 8px;
+  padding: .8rem 1rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: .5rem;
+  transition: background .2s, transform .1s;
+}
+.btn-primary:hover  { background: #245a42; }
+.btn-primary:active { transform: scale(.98); }
+
+.auth-switch {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: .88rem;
+  color: var(--gris-suave);
+}
+.auth-switch a { font-weight: 600; color: var(--verde); }
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .auth-wrapper { grid-template-columns: 1fr; }
+  .auth-panel { display: none; }
+  .auth-form-wrapper { padding: 2rem 1.25rem; }
+  .form-grid-2 { grid-template-columns: 1fr; }
+}
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+
+  <!-- Panel izquierdo decorativo -->
+  <div class="auth-panel">
+    <h1 class="auth-panel__heading">
+      Cuida tu<br><em>municipio</em><br>con un clic
+    </h1>
+    <p class="auth-panel__sub">
+      Únete a la comunidad que reporta puntos críticos de residuos
+      y hace seguimiento a la gestión ambiental de Sabana Centro.
+    </p>
+    <ul class="auth-panel__features">
+      <li>Reporta puntos ilegales de basura</li>
+      <li>Registra tus residuos domésticos</li>
+      <li>Consulta el mapa de tu municipio</li>
+      <li>Recibe notificaciones de gestión</li>
+    </ul>
+  </div>
+
+  <!-- Formulario de registro -->
+  <div class="auth-form-wrapper">
+    <h2>Crear cuenta</h2>
+    <p class="auth-subtitle">
+      ¿Ya tienes cuenta? <a href="{% url 'usuarios:login' %}">Inicia sesión</a>
+    </p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="form-grid-2">
+
+        <!-- Nombre -->
+        <div class="form-group">
+          <label for="{{ form.first_name.id_for_label }}">
+            Nombre <span class="required">*</span>
+          </label>
+          {{ form.first_name }}
+          {% for error in form.first_name.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <!-- Apellido -->
+        <div class="form-group">
+          <label for="{{ form.last_name.id_for_label }}">
+            Apellido <span class="required">*</span>
+          </label>
+          {{ form.last_name }}
+          {% for error in form.last_name.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <!-- Email (ocupa las 2 columnas) -->
+        <div class="form-group full">
+          <label for="{{ form.email.id_for_label }}">
+            Correo electrónico <span class="required">*</span>
+          </label>
+          {{ form.email }}
+          {% for error in form.email.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <!-- Municipio -->
+        <div class="form-group full">
+          <label for="{{ form.municipio.id_for_label }}">
+            Municipio <span class="required">*</span>
+          </label>
+          {{ form.municipio }}
+          {% for error in form.municipio.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <!-- Contraseña -->
+        <div class="form-group">
+          <label for="{{ form.password1.id_for_label }}">
+            Contraseña <span class="required">*</span>
+          </label>
+          {{ form.password1 }}
+          <span class="field-help">{{ form.password1.help_text }}</span>
+          {% for error in form.password1.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <!-- Confirmar contraseña -->
+        <div class="form-group">
+          <label for="{{ form.password2.id_for_label }}">
+            Confirmar contraseña <span class="required">*</span>
+          </label>
+          {{ form.password2 }}
+          {% for error in form.password2.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+      </div><!-- /form-grid-2 -->
+
+      <!-- Errores no asociados a un campo específico -->
+      {% if form.non_field_errors %}
+        <div style="margin-bottom:.75rem;">
+          {% for error in form.non_field_errors %}
+            <p class="field-error">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <button type="submit" class="btn-primary">Crear mi cuenta</button>
+    </form>
+
+    <p class="auth-switch">
+      Al registrarte aceptas que tu información será usada para la gestión ambiental de tu municipio.
+    </p>
+  </div>
+
+</div>
+{% endblock %}
