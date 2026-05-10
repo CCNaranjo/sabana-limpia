@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}Reporte enviado · SabanaLimpia{% endblock %}
+
+{% block extra_styles %}
+<style>
+  .confirmacion-page {
+    min-height: calc(100vh - 64px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background: linear-gradient(160deg, var(--verde-palido) 0%, #f0faf4 60%, #fff 100%);
+  }
+
+  .confirmacion-card {
+    background: #fff;
+    border: 1px solid #e2ede6;
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(45, 106, 79, 0.1);
+    max-width: 520px;
+    width: 100%;
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+
+  .confirmacion-icon {
+    width: 72px;
+    height: 72px;
+    background: var(--verde-palido);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    margin: 0 auto 1.25rem;
+    animation: pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  @keyframes pop-in {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  .confirmacion-title {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    color: var(--gris-texto);
+    margin: 0 0 0.5rem;
+    line-height: 1.2;
+  }
+
+  .confirmacion-sub {
+    color: var(--gris-suave);
+    font-size: 0.95rem;
+    margin-bottom: 1.75rem;
+    line-height: 1.5;
+  }
+
+  /* Report summary pill */
+  .reporte-resumen {
+    background: var(--verde-palido);
+    border: 1px solid #c6edda;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.75rem;
+    text-align: left;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .reporte-resumen__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+  }
+
+  .reporte-resumen__key {
+    color: var(--gris-suave);
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .reporte-resumen__val {
+    color: var(--gris-texto);
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .badge--pendiente { background: #f0f0f0; color: #555; }
+
+  /* Action buttons */
+  .confirmacion-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.93rem;
+    font-weight: 600;
+    font-family: inherit;
+    text-decoration: none;
+    transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--verde);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(45, 106, 79, 0.28);
+  }
+
+  .btn-primary:hover {
+    background: #235940;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(45, 106, 79, 0.35);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--verde);
+    border: 1.5px solid var(--verde-claro);
+  }
+
+  .btn-outline:hover {
+    background: var(--verde-palido);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 420px) {
+    .confirmacion-card {
+      padding: 1.75rem 1.25rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirmacion-page">
+  <div class="confirmacion-card">
+
+    <div class="confirmacion-icon">✅</div>
+
+    <h1 class="confirmacion-title">¡Reporte enviado!</h1>
+    <p class="confirmacion-sub">
+      Gracias por contribuir a mantener limpia la Sabana Centro.<br>
+      El operador de <strong>{{ reporte.get_municipio_display }}</strong>
+      revisará tu reporte a la brevedad.
+    </p>
+
+    {# Report summary #}
+    <div class="reporte-resumen" aria-label="Resumen del reporte">
+      <div class="reporte-resumen__row">
+        <span class="reporte-resumen__key">Número de reporte</span>
+        <span class="reporte-resumen__val">#{{ reporte.pk }}</span>
+      </div>
+      <div class="reporte-resumen__row">
+        <span class="reporte-resumen__key">Título</span>
+        <span class="reporte-resumen__val">{{ reporte.titulo }}</span>
+      </div>
+      <div class="reporte-resumen__row">
+        <span class="reporte-resumen__key">Categoría</span>
+        <span class="reporte-resumen__val">{{ reporte.get_categoria_display }}</span>
+      </div>
+      <div class="reporte-resumen__row">
+        <span class="reporte-resumen__key">Estado</span>
+        <span class="reporte-resumen__val">
+          <span class="badge badge--pendiente">⏳ Pendiente</span>
+        </span>
+      </div>
+      <div class="reporte-resumen__row">
+        <span class="reporte-resumen__key">Fecha</span>
+        <span class="reporte-resumen__val">{{ reporte.created_at|date:"j \d\e N, H:i" }}</span>
+      </div>
+    </div>
+
+    {# Actions #}
+    <div class="confirmacion-actions">
+      <a href="{% url 'reportes:mis_reportes' %}" class="btn btn-primary">
+        <span>📋</span>
+        <span>Ver mis reportes</span>
+      </a>
+      <a href="{% url 'reportes:nuevo_reporte' %}" class="btn btn-outline">
+        <span>➕</span>
+        <span>Reportar otro problema</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

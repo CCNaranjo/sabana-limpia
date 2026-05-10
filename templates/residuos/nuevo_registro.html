@@ -1,0 +1,706 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {% if es_edicion %}Editar registro{% else %}Registrar residuos{% endif %}
+  · SabanaLimpia
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+  /* ─── Layout ──────────────────────────────────────────────────── */
+  .residuos-page {
+    min-height: calc(100vh - 64px);
+    background: linear-gradient(160deg, var(--verde-palido) 0%, #f0faf4 60%, #fff 100%);
+    padding: 2.5rem 1rem 4rem;
+  }
+
+  .residuos-container {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* ─── Header ──────────────────────────────────────────────────── */
+  .residuos-header {
+    margin-bottom: 1.75rem;
+  }
+
+  .residuos-header__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--verde);
+    margin-bottom: 0.4rem;
+  }
+
+  .residuos-header__title {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    color: var(--gris-texto);
+    line-height: 1.15;
+    margin: 0 0 0.5rem;
+  }
+
+  .semana-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--verde-palido);
+    border: 1px solid #b8e0c8;
+    border-radius: 20px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--verde);
+  }
+
+  .edicion-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #fff8e1;
+    border: 1px solid #f5d27a;
+    border-radius: 20px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #7d5a00;
+    margin-left: 0.5rem;
+  }
+
+  /* ─── Card ────────────────────────────────────────────────────── */
+  .residuos-card {
+    background: #fff;
+    border: 1px solid #e2ede6;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(45, 106, 79, 0.07);
+    overflow: hidden;
+  }
+
+  /* ─── Intro info ──────────────────────────────────────────────── */
+  .form-info {
+    background: var(--verde-palido);
+    border-bottom: 1px solid #d4edda;
+    padding: 1rem 1.5rem;
+    font-size: 0.85rem;
+    color: #2d5a3d;
+    line-height: 1.5;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .form-info__icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  /* ─── Secciones del formulario ────────────────────────────────── */
+  .form-section {
+    padding: 1.5rem;
+    border-bottom: 1px solid #eef4f0;
+  }
+
+  .form-section:last-of-type {
+    border-bottom: none;
+  }
+
+  .form-section__title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--gris-suave);
+    margin-bottom: 1.1rem;
+  }
+
+  /* ─── Residuo item (fila de cada tipo) ───────────────────────── */
+  .residuo-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem 1rem;
+    align-items: start;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid #f0f5f2;
+  }
+
+  .residuo-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .residuo-item:first-child {
+    padding-top: 0;
+  }
+
+  .residuo-item__label-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .residuo-item__label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gris-texto);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .residuo-item__hint {
+    font-size: 0.75rem;
+    color: var(--gris-suave);
+    line-height: 1.4;
+  }
+
+  .residuo-item__input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+  }
+
+  .residuo-item__input {
+    width: 80px;
+    padding: 0.5rem 0.6rem;
+    border: 1.5px solid #d0ddd5;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    text-align: right;
+    font-family: inherit;
+    color: var(--gris-texto);
+    background: #fff;
+    transition: border-color 0.18s, box-shadow 0.18s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .residuo-item__input:focus {
+    outline: none;
+    border-color: var(--verde);
+    box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.2);
+  }
+
+  .residuo-item__input.has-error {
+    border-color: #c0392b;
+  }
+
+  .residuo-item__unit {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gris-suave);
+  }
+
+  .residuo-item__errors {
+    grid-column: 1 / -1;
+    list-style: none;
+    padding: 0;
+    margin: 0.25rem 0 0;
+  }
+
+  .residuo-item__errors li {
+    font-size: 0.78rem;
+    color: #c0392b;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  .residuo-item__errors li::before {
+    content: '⚠';
+    flex-shrink: 0;
+  }
+
+  /* Indicador de categoría de peligrosidad */
+  .residuo-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .residuo-dot--organico       { background: #6bbc7a; }
+  .residuo-dot--reciclable      { background: #3b9de0; }
+  .residuo-dot--no-reciclable   { background: #aaa; }
+  .residuo-dot--especial        { background: #f0a500; }
+  .residuo-dot--peligroso       { background: #e05c3b; }
+
+  /* ─── Observaciones ───────────────────────────────────────────── */
+  .obs-field {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: 1.5px solid #d0ddd5;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    color: var(--gris-texto);
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.18s, box-shadow 0.18s;
+    box-sizing: border-box;
+  }
+
+  .obs-field:focus {
+    outline: none;
+    border-color: var(--verde);
+    box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.2);
+  }
+
+  .obs-hint {
+    font-size: 0.77rem;
+    color: var(--gris-suave);
+    margin-top: 0.3rem;
+  }
+
+  /* ─── Errores no-field ────────────────────────────────────────── */
+  .form-errors-global {
+    background: #fde8e8;
+    border: 1px solid #f5c6c6;
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+    color: #8b1a1a;
+  }
+
+  .form-errors-global p {
+    font-weight: 600;
+    margin: 0 0 0.35rem;
+  }
+
+  .form-errors-global ul {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+
+  /* ─── Totalizador en tiempo real ──────────────────────────────── */
+  .total-strip {
+    background: #f9fdfb;
+    border-top: 1px solid #eef4f0;
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.88rem;
+  }
+
+  .total-strip__label {
+    color: var(--gris-suave);
+    font-weight: 500;
+  }
+
+  .total-strip__value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gris-texto);
+  }
+
+  .total-strip__value span {
+    color: var(--verde);
+  }
+
+  /* ─── Footer: submit ──────────────────────────────────────────── */
+  .form-footer {
+    padding: 1.25rem 1.5rem;
+    background: #f9fdfb;
+    border-top: 1px solid #eef4f0;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.4rem;
+    background: var(--verde);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+    box-shadow: 0 4px 14px rgba(45, 106, 79, 0.28);
+    flex: 1;
+    justify-content: center;
+  }
+
+  .btn-submit:hover:not(:disabled) {
+    background: #235940;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(45, 106, 79, 0.35);
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.7;
+    cursor: wait;
+  }
+
+  .btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.8rem 1rem;
+    background: transparent;
+    color: var(--gris-suave);
+    border: 1.5px solid #d0ddd5;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+
+  .btn-cancel:hover {
+    background: #f5f8f6;
+  }
+
+  /* ─── Responsive ──────────────────────────────────────────────── */
+  @media (max-width: 520px) {
+    .residuos-page {
+      padding: 1.5rem 0.75rem 3rem;
+    }
+
+    .form-section {
+      padding: 1.1rem 1rem;
+    }
+
+    .form-footer {
+      padding: 1rem;
+      flex-direction: column;
+    }
+
+    .btn-submit,
+    .btn-cancel {
+      width: 100%;
+    }
+
+    .residuo-item__input {
+      width: 70px;
+    }
+
+    .form-info {
+      padding: 0.85rem 1rem;
+    }
+
+    .total-strip {
+      padding: 0.75rem 1rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="residuos-page">
+  <div class="residuos-container">
+
+    {# ── Header ──────────────────────────────────────────────── #}
+    <div class="residuos-header">
+      <div class="residuos-header__eyebrow">
+        <span>♻️</span> SabanaLimpia
+      </div>
+      <h1 class="residuos-header__title">
+        {% if es_edicion %}Editar registro{% else %}Registrar residuos{% endif %}
+        de esta semana
+      </h1>
+
+      <div style="display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center;">
+        <span class="semana-badge">
+          📅 Semana del {{ semana_label }}
+        </span>
+        {% if es_edicion %}
+          <span class="edicion-badge">✏️ Editando registro existente</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ── Card ────────────────────────────────────────────────── #}
+    <div class="residuos-card">
+
+      {# ── Info contextual ─────────────────────────────────── #}
+      <div class="form-info">
+        <span class="form-info__icon">💡</span>
+        <span>
+          Estima los kilogramos de residuos que generó tu hogar esta semana.
+          Los datos se suman a las estadísticas públicas de
+          <strong>{{ request.user.get_municipio_display }}</strong>
+          para ayudar a planificar la gestión municipal.
+        </span>
+      </div>
+
+      <form id="residuos-form" method="post" novalidate>
+        {% csrf_token %}
+
+        {# ── Errores globales ────────────────────────────── #}
+        {% if form.non_field_errors %}
+          <div class="form-section">
+            <div class="form-errors-global" role="alert">
+              <p>Por favor revisa lo siguiente:</p>
+              <ul>
+                {% for error in form.non_field_errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        {% endif %}
+
+        {# ── Tipos de residuo ────────────────────────────── #}
+        <div class="form-section">
+          <div class="form-section__title">Tipos de residuo</div>
+
+          {# 1. Orgánico #}
+          <div class="residuo-item">
+            <div class="residuo-item__label-group">
+              <label class="residuo-item__label" for="{{ form.organico_kg.id_for_label }}">
+                <span class="residuo-dot residuo-dot--organico"></span>
+                🍌 Orgánicos
+              </label>
+              <span class="residuo-item__hint">
+                Cáscaras, restos de comida, hojas, ramas, poda de jardín
+              </span>
+            </div>
+            <div class="residuo-item__input-wrap">
+              <input
+                type="number"
+                id="{{ form.organico_kg.id_for_label }}"
+                name="organico_kg"
+                class="residuo-item__input {% if form.organico_kg.errors %}has-error{% endif %}"
+                value="{{ form.organico_kg.value|default:'0' }}"
+                step="0.1"
+                min="0"
+                data-total-field
+              >
+              <span class="residuo-item__unit">kg</span>
+            </div>
+            {% if form.organico_kg.errors %}
+              <ul class="residuo-item__errors" role="alert">
+                {% for e in form.organico_kg.errors %}<li>{{ e }}</li>{% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+
+          {# 2. Reciclable #}
+          <div class="residuo-item">
+            <div class="residuo-item__label-group">
+              <label class="residuo-item__label" for="{{ form.reciclable_kg.id_for_label }}">
+                <span class="residuo-dot residuo-dot--reciclable"></span>
+                ♻️ Reciclables
+              </label>
+              <span class="residuo-item__hint">
+                Papel, cartón, plástico limpio, vidrio, metal, latas
+              </span>
+            </div>
+            <div class="residuo-item__input-wrap">
+              <input
+                type="number"
+                id="{{ form.reciclable_kg.id_for_label }}"
+                name="reciclable_kg"
+                class="residuo-item__input {% if form.reciclable_kg.errors %}has-error{% endif %}"
+                value="{{ form.reciclable_kg.value|default:'0' }}"
+                step="0.1"
+                min="0"
+                data-total-field
+              >
+              <span class="residuo-item__unit">kg</span>
+            </div>
+            {% if form.reciclable_kg.errors %}
+              <ul class="residuo-item__errors" role="alert">
+                {% for e in form.reciclable_kg.errors %}<li>{{ e }}</li>{% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+
+          {# 3. No reciclable #}
+          <div class="residuo-item">
+            <div class="residuo-item__label-group">
+              <label class="residuo-item__label" for="{{ form.no_reciclable_kg.id_for_label }}">
+                <span class="residuo-dot residuo-dot--no-reciclable"></span>
+                🗑️ No reciclables
+              </label>
+              <span class="residuo-item__hint">
+                Residuos mezclados que no se pueden separar ni reciclar
+              </span>
+            </div>
+            <div class="residuo-item__input-wrap">
+              <input
+                type="number"
+                id="{{ form.no_reciclable_kg.id_for_label }}"
+                name="no_reciclable_kg"
+                class="residuo-item__input {% if form.no_reciclable_kg.errors %}has-error{% endif %}"
+                value="{{ form.no_reciclable_kg.value|default:'0' }}"
+                step="0.1"
+                min="0"
+                data-total-field
+              >
+              <span class="residuo-item__unit">kg</span>
+            </div>
+            {% if form.no_reciclable_kg.errors %}
+              <ul class="residuo-item__errors" role="alert">
+                {% for e in form.no_reciclable_kg.errors %}<li>{{ e }}</li>{% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+
+          {# 4. Especial #}
+          <div class="residuo-item">
+            <div class="residuo-item__label-group">
+              <label class="residuo-item__label" for="{{ form.especial_kg.id_for_label }}">
+                <span class="residuo-dot residuo-dot--especial"></span>
+                ⚡ Especiales
+              </label>
+              <span class="residuo-item__hint">
+                Electrónicos viejos, cables, electrodomésticos pequeños, baterías
+              </span>
+            </div>
+            <div class="residuo-item__input-wrap">
+              <input
+                type="number"
+                id="{{ form.especial_kg.id_for_label }}"
+                name="especial_kg"
+                class="residuo-item__input {% if form.especial_kg.errors %}has-error{% endif %}"
+                value="{{ form.especial_kg.value|default:'0' }}"
+                step="0.1"
+                min="0"
+                data-total-field
+              >
+              <span class="residuo-item__unit">kg</span>
+            </div>
+            {% if form.especial_kg.errors %}
+              <ul class="residuo-item__errors" role="alert">
+                {% for e in form.especial_kg.errors %}<li>{{ e }}</li>{% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+
+          {# 5. Peligroso #}
+          <div class="residuo-item">
+            <div class="residuo-item__label-group">
+              <label class="residuo-item__label" for="{{ form.peligroso_kg.id_for_label }}">
+                <span class="residuo-dot residuo-dot--peligroso"></span>
+                ☠️ Peligrosos
+              </label>
+              <span class="residuo-item__hint">
+                Pinturas, pesticidas, aceites usados, productos químicos del hogar
+              </span>
+            </div>
+            <div class="residuo-item__input-wrap">
+              <input
+                type="number"
+                id="{{ form.peligroso_kg.id_for_label }}"
+                name="peligroso_kg"
+                class="residuo-item__input {% if form.peligroso_kg.errors %}has-error{% endif %}"
+                value="{{ form.peligroso_kg.value|default:'0' }}"
+                step="0.1"
+                min="0"
+                data-total-field
+              >
+              <span class="residuo-item__unit">kg</span>
+            </div>
+            {% if form.peligroso_kg.errors %}
+              <ul class="residuo-item__errors" role="alert">
+                {% for e in form.peligroso_kg.errors %}<li>{{ e }}</li>{% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        </div>
+
+        {# ── Totalizador live ─────────────────────────────── #}
+        <div class="total-strip" aria-live="polite">
+          <span class="total-strip__label">Total estimado esta semana</span>
+          <span class="total-strip__value">
+            <span id="total-kg">0.0</span> kg
+          </span>
+        </div>
+
+        {# ── Observaciones ───────────────────────────────── #}
+        <div class="form-section">
+          <div class="form-section__title">Observaciones (opcional)</div>
+          <textarea
+            id="{{ form.observaciones.id_for_label }}"
+            name="observaciones"
+            class="obs-field"
+            rows="3"
+            placeholder="Ej: Esta semana hubo reforma en casa, el volumen es mayor a lo habitual."
+            maxlength="500"
+          >{{ form.observaciones.value|default:'' }}</textarea>
+          <p class="obs-hint">Máximo 500 caracteres · Útil para explicar variaciones inusuales</p>
+        </div>
+
+        {# ── Footer: botones ─────────────────────────────── #}
+        <div class="form-footer">
+          <button type="submit" class="btn-submit" id="submit-btn">
+            <span>💾</span>
+            <span>{{ es_edicion|yesno:"Actualizar registro,Guardar registro" }}</span>
+          </button>
+          <a href="{% url 'residuos:mis_registros' %}" class="btn-cancel">
+            Cancelar
+          </a>
+        </div>
+
+      </form>
+    </div>
+    {# /card #}
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+/**
+ * Totalizador en tiempo real.
+ *
+ * Suma los 5 campos kg y actualiza el contador mientras el usuario escribe.
+ * No tiene dependencias externas — vanilla JS puro.
+ */
+(function () {
+  'use strict';
+
+  const fields    = document.querySelectorAll('[data-total-field]');
+  const totalEl   = document.getElementById('total-kg');
+  const submitBtn = document.getElementById('submit-btn');
+
+  if (!fields.length || !totalEl) return;
+
+  function recalculate() {
+    let sum = 0;
+    fields.forEach(function (input) {
+      const val = parseFloat(input.value) || 0;
+      sum += Math.max(0, val); // Ignorar negativos en tiempo real
+    });
+    totalEl.textContent = sum.toFixed(1);
+  }
+
+  // Calcular al cargar (pre-llenado en edición)
+  recalculate();
+
+  // Calcular en cada cambio
+  fields.forEach(function (input) {
+    input.addEventListener('input', recalculate);
+    input.addEventListener('change', recalculate);
+  });
+
+  // Prevenir doble submit
+  document.getElementById('residuos-form').addEventListener('submit', function () {
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Guardando…';
+    }
+  });
+})();
+</script>
+{% endblock %}

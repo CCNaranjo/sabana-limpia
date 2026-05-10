@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis registros de residuos | SabanaLimpia{% endblock %}
+
+{% block extra_styles %}
+<style>
+  /* ============================================
+     Estilos específicos para la página de historial
+     ============================================ */
+  .registros-page {
+    max-width: 1280px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+  }
+
+  .registros-container {
+    background: var(--blanco);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    overflow: hidden;
+    padding: 1.5rem 1.5rem 2rem;
+  }
+
+  /* Cabecera */
+  .registros-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--verde-palido);
+    padding-bottom: 1rem;
+  }
+
+  .registros-header h1 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--verde);
+    margin: 0;
+  }
+
+  .registros-header p {
+    color: var(--gris-suave);
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+  }
+
+  .btn-nuevo {
+    background: var(--verde-claro);
+    color: var(--verde);
+    padding: 0.6rem 1.2rem;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .btn-nuevo:hover {
+    background: #74c69d;
+    transform: translateY(-2px);
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  }
+
+  /* Tabla responsiva */
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border-radius: var(--radio);
+  }
+
+  .registros-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    min-width: 700px;
+  }
+
+  .registros-table th,
+  .registros-table td {
+    padding: 1rem 0.75rem;
+    text-align: center;
+    border-bottom: 1px solid var(--verde-palido);
+  }
+
+  .registros-table th {
+    background: var(--verde-palido);
+    color: var(--verde);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .registros-table td {
+    color: var(--gris-texto);
+  }
+
+  .registros-table tr:hover td {
+    background-color: #f7fef5;
+  }
+
+  .total-kg {
+    font-weight: 700;
+    color: var(--verde);
+  }
+
+  .btn-editar {
+    background: none;
+    border: 1px solid var(--verde-claro);
+    color: var(--verde);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-editar:hover {
+    background: var(--verde-claro);
+    color: white;
+    text-decoration: none;
+  }
+
+  .badge-semana-actual {
+    background: var(--verde);
+    color: white;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    margin-left: 0.5rem;
+    white-space: nowrap;
+  }
+
+  /* Estado vacío */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: var(--arena);
+    border-radius: var(--radio);
+    margin: 2rem 0;
+  }
+
+  .empty-state p {
+    margin-bottom: 1rem;
+    color: var(--gris-suave);
+  }
+
+  .empty-state a {
+    background: var(--verde);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 30px;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  /* Paginación */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .pagination a,
+  .pagination .current-page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.2rem;
+    height: 2.2rem;
+    padding: 0 0.6rem;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .pagination a {
+    background: var(--verde-palido);
+    color: var(--verde);
+  }
+
+  .pagination a:hover {
+    background: var(--verde-claro);
+    color: white;
+  }
+
+  .pagination .current-page {
+    background: var(--verde);
+    color: white;
+  }
+
+  .pagination .disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  /* Pie de tabla */
+  .registros-footer {
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--gris-suave);
+    margin-top: 1rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="registros-page">
+  <div class="registros-container">
+    
+    <div class="registros-header">
+      <div>
+        <h1>Mis registros de residuos</h1>
+        <p>Historial de las últimas 8 semanas • Puedes editar la semana actual y la anterior (solo lunes/martes)</p>
+      </div>
+      <a href="{% url 'residuos:nuevo_registro' %}" class="btn-nuevo">
+        ✏️ Registrar / editar esta semana
+      </a>
+    </div>
+
+    {% if page_obj.object_list %}
+      <div class="table-wrapper">
+        <table class="registros-table">
+          <thead>
+            <tr>
+              <th>Semana</th>
+              <th>🍌 Orgánico</th>
+              <th>♻️ Reciclable</th>
+              <th>🗑️ No reciclable</th>
+              <th>🔧 Especial</th>
+              <th>⚠️ Peligroso</th>
+              <th>Total</th>
+              <th>Observaciones</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in page_obj.object_list %}
+              <tr>
+                <td>
+                  {{ item.label }}
+                  {% if item.obj.semana == semana_actual %}
+                    <span class="badge-semana-actual">Semana actual</span>
+                  {% endif %}
+                </td>
+                <td>{{ item.obj.organico_kg|floatformat:1 }} kg</td>
+                <td>{{ item.obj.reciclable_kg|floatformat:1 }} kg</td>
+                <td>{{ item.obj.no_reciclable_kg|floatformat:1 }} kg</td>
+                <td>{{ item.obj.especial_kg|floatformat:1 }} kg</td>
+                <td>{{ item.obj.peligroso_kg|floatformat:1 }} kg</td>
+                <td class="total-kg">{{ item.total|floatformat:1 }} kg</td>
+                <td>{{ item.obj.observaciones|default:"—"|truncatewords:8 }}</td>
+                <td>
+                  {% if item.editable %}
+                    <a href="{% url 'residuos:nuevo_registro' %}" class="btn-editar">
+                      ✏️ Editar
+                    </a>
+                  {% else %}
+                    <span class="btn-editar disabled" style="opacity:0.4; cursor:default;">🔒 Solo lectura</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      {% if page_obj.paginator.num_pages > 1 %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a href="?page=1">« Primera</a>
+          <a href="?page={{ page_obj.previous_page_number }}">‹ Anterior</a>
+        {% else %}
+          <span class="disabled">« Primera</span>
+          <span class="disabled">‹ Anterior</span>
+        {% endif %}
+
+        <span class="current-page">
+          Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">Siguiente ›</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}">Última »</a>
+        {% else %}
+          <span class="disabled">Siguiente ›</span>
+          <span class="disabled">Última »</span>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <div class="registros-footer">
+        <small>💡 Nota: Puedes editar el registro de la semana actual en cualquier momento. El registro de la semana anterior solo se puede editar los lunes y martes.</small>
+      </div>
+
+    {% else %}
+      <div class="empty-state">
+        <p>🌱 Aún no has registrado residuos domésticos.</p>
+        <p>Registra tus hábitos de separación y contribuye a los datos de tu municipio.</p>
+        <a href="{% url 'residuos:nuevo_registro' %}">➕ Registrar primera semana</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

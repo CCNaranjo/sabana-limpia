@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views import View
+from reportes import views as reportes
 
 from .forms import LoginForm, RegistroForm
 
@@ -48,7 +49,7 @@ class RegistroView(View):
         """Redirige según el rol después del registro."""
         if user.es_operador() or user.es_admin():
             return '/admin/'        # ajustar cuando exista la app panel
-        return '/admin/login/'  # ajustar cuando exista la app reportes
+        return '/reportes/nuevo/'  # ajustar cuando exista la app reportes
 
 
 class LoginView(View):
@@ -103,7 +104,7 @@ class LoginView(View):
         """Redirige al destino correcto según el rol del usuario."""
         if user.es_operador() or user.es_admin():
             return '/admin/'        # ajustar cuando exista la app panel
-        return '/admin/'  # ajustar cuando exista la app reportes
+        return '/reportes/nuevo/'  # ajustar cuando exista la app reportes
 
 
 @login_required

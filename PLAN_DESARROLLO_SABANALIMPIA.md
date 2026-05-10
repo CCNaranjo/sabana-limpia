@@ -244,22 +244,22 @@ Todas las rutas viven en Django. El navegador navega entre páginas HTML complet
 
 ---
 
-- [ ] **T-17 — Crear formulario de nuevo reporte (template + vista)**
+- [x] **T-17 — Crear formulario de nuevo reporte (template + vista)**
   Crear `templates/reportes/nuevo_reporte.html` con los campos: título, descripción, categoría (select), foto (input file), y un botón "Usar mi ubicación" que llama a `navigator.geolocation.getCurrentPosition()` en Vanilla JS y rellena dos campos ocultos `latitud` y `longitud`. Mostrar preview de la foto seleccionada antes de enviar. La vista en `reportes/views.py` recibe el POST, guarda la imagen en `/media/reportes/` y crea el objeto `Reporte` con `usuario=request.user` y `estado='pendiente'`.
 
-- [ ] **T-18 — Comprimir foto en el cliente antes de subir**
+- [x] **T-18 — Comprimir foto en el cliente antes de subir**
   En `static/js/reporte.js` escribir una función con `canvas` de HTML5 que lee el archivo de foto seleccionado, lo redibuja en un canvas a máximo 1200px de ancho y lo exporta con calidad 0.8. Reemplazar el archivo en el input antes del envío del formulario. Esto garantiza que ninguna imagen supere 2 MB sin depender de librerías externas.
 
-- [ ] **T-19 — Página "Mis Reportes"**
+- [x] **T-19 — Página "Mis Reportes"**
   Crear `templates/reportes/mis_reportes.html` y la vista correspondiente que hace `Reporte.objects.filter(usuario=request.user).order_by('-created_at')`. Mostrar tarjetas con: foto miniatura, título, categoría, municipio, fecha, badge de estado con color (pendiente=gris, en_gestion=amarillo, resuelto=verde, rechazado=rojo), y nota del operador si existe. Solo accesible con sesión activa.
 
-- [ ] **T-20 — Crear formulario de registro de residuos domésticos**
+- [x] **T-20 — Crear formulario de registro de residuos domésticos**
   Crear `templates/residuos/nuevo_registro.html` con campos numéricos (kg) para cada tipo: orgánico, reciclable, no reciclable, especial, peligroso. Mostrar el rango de la semana actual (lunes a domingo) en el encabezado. Incluir texto de ayuda por cada tipo (ej: "Reciclable: papel, cartón, plástico limpio, vidrio"). La vista calcula automáticamente el lunes de la semana actual como campo `semana`. Si ya existe un registro para esa semana, mostrar el existente en lugar del formulario vacío.
 
-- [ ] **T-21 — Página "Mis Registros" de residuos**
+- [x] **T-21 — Página "Mis Registros" de residuos**
   Crear `templates/residuos/mis_registros.html` y la vista que lista todos los `RegistroResiduo` del usuario logueado ordenados por semana descendente. Mostrar una tabla simple con: semana, kg por tipo, total general y observaciones. Solo accesible con sesión activa.
 
-- [ ] **T-22 — Página de confirmación post-reporte**
+- [x] **T-22 — Página de confirmación post-reporte**
   Después de enviar un reporte exitosamente, redirigir a una página `templates/reportes/confirmacion.html` que muestra el número de reporte asignado, el estado inicial (Pendiente), y un botón para "Ver mis reportes" y otro para "Reportar otro problema". Esto cierra el ciclo de retroalimentación inmediata al ciudadano (criterio HU-01).
 
 ---
