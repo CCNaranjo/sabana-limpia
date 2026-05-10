@@ -16,7 +16,7 @@ class RegistroView(View):
 
     template_name = 'usuarios/registro.html'
     # Si el usuario ya está autenticado, no tiene sentido que vea el registro
-    redirect_authenticated_url = 'reportes:mapa'  # ajustar cuando exista la app reportes
+    redirect_authenticated_url = '/admin/'  # ajustar cuando exista la app reportes
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -47,8 +47,8 @@ class RegistroView(View):
     def _default_redirect(self, user):
         """Redirige según el rol después del registro."""
         if user.es_operador() or user.es_admin():
-            return 'panel:lista'        # ajustar cuando exista la app panel
-        return 'reportes:mis_reportes'  # ajustar cuando exista la app reportes
+            return '/admin/'        # ajustar cuando exista la app panel
+        return '/admin/login/'  # ajustar cuando exista la app reportes
 
 
 class LoginView(View):
@@ -102,8 +102,8 @@ class LoginView(View):
     def _default_redirect(self, user):
         """Redirige al destino correcto según el rol del usuario."""
         if user.es_operador() or user.es_admin():
-            return 'panel:lista'        # ajustar cuando exista la app panel
-        return 'reportes:mis_reportes'  # ajustar cuando exista la app reportes
+            return '/admin/'        # ajustar cuando exista la app panel
+        return '/admin/'  # ajustar cuando exista la app reportes
 
 
 @login_required
@@ -115,4 +115,4 @@ def logout_view(request):
     if request.method == 'POST':
         logout(request)
         messages.info(request, 'Has cerrado sesión correctamente.')
-    return redirect('landing')  # ajustar cuando exista la landing page
+    return redirect('/auth/login/')  # ajustar cuando exista la landing page

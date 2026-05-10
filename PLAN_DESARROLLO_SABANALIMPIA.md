@@ -187,52 +187,52 @@ Todas las rutas viven en Django. El navegador navega entre páginas HTML complet
 
 ---
 
-- [ ] **T-01 — Crear repositorio en GitHub**
+- [X] **T-01 — Crear repositorio en GitHub**
   Crear repositorio privado con nombre `sabana-limpia`. Agregar a ambos colaboradores con rol de escritura. Inicializar con un `README.md` vacío.
 
-- [ ] **T-02 — Crear `.gitignore`**
+- [X] **T-02 — Crear `.gitignore`**
   Agregar un `.gitignore` adecuado para proyectos Python/Django. Debe ignorar: `venv/`, `__pycache__/`, `*.pyc`, `.env`, `media/`, `db.sqlite3`. Usar gitignore.io con el término `django`.
 
-- [ ] **T-03 — Crear entorno virtual Python e instalar dependencias**
+- [X] **T-03 — Crear entorno virtual Python e instalar dependencias**
   Crear el entorno virtual con `python -m venv venv` y activarlo. Instalar: `django==4.2.*`, `psycopg2-binary`, `Pillow`, `python-decouple`. Generar `requirements.txt` con `pip freeze > requirements.txt`.
 
-- [ ] **T-04 — Crear proyecto Django y apps**
+- [X] **T-04 — Crear proyecto Django y apps**
   Ejecutar `django-admin startproject config .` en la raíz del repositorio. Luego crear las tres apps: `python manage.py startapp usuarios`, `python manage.py startapp reportes`, `python manage.py startapp residuos`.
 
-- [ ] **T-05 — Crear base de datos PostgreSQL local**
+- [X] **T-05 — Crear base de datos PostgreSQL local**
   Abrir psql y ejecutar: `CREATE DATABASE sabanalimpia;`, `CREATE USER sabana_user WITH PASSWORD 'sabana_pass';`, `GRANT ALL PRIVILEGES ON DATABASE sabanalimpia TO sabana_user;`. Verificar conexión con `psql -U sabana_user -d sabanalimpia`.
 
-- [ ] **T-06 — Crear archivo `.env` con variables de entorno**
+- [X] **T-06 — Crear archivo `.env` con variables de entorno**
   Crear el archivo `.env` en la raíz del proyecto con todas las variables definidas en la sección [Variables de Entorno](#8-variables-de-entorno). Confirmar que el archivo está en `.gitignore` antes de hacer cualquier commit.
 
-- [ ] **T-07 — Configurar `settings.py`**
+- [X] **T-07 — Configurar `settings.py`**
   Leer las variables de `.env` con `python-decouple`. Agregar todas las apps al `INSTALLED_APPS`. Configurar `DATABASES` apuntando a PostgreSQL. Definir `AUTH_USER_MODEL = 'usuarios.CustomUser'`. Configurar `MEDIA_ROOT` y `MEDIA_URL`. Configurar `TEMPLATES` para que Django encuentre la carpeta `templates/`. Configurar `STATICFILES_DIRS` para la carpeta `static/`.
 
-- [ ] **T-08 — Crear modelo `CustomUser` y migración**
+- [X] **T-08 — Crear modelo `CustomUser` y migración**
   En `usuarios/models.py` crear la clase `CustomUser` heredando de `AbstractUser`. Agregar los campos `rol` (choices: ciudadano, operador, admin) y `municipio` (choices con los 11 municipios). Configurar `USERNAME_FIELD = 'email'` y `REQUIRED_FIELDS = ['username']`. Ejecutar `makemigrations usuarios` y `migrate`.
 
-- [ ] **T-09 — Configurar `config/urls.py` principal**
+- [X] **T-09 — Configurar `config/urls.py` principal**
   Incluir las rutas de cada app (`usuarios.urls`, `reportes.urls`, `residuos.urls`). Habilitar el panel `/admin/`. Agregar las rutas de `MEDIA_URL` para servir imágenes en desarrollo con `static()`.
 
-- [ ] **T-10 — Crear vistas y templates de registro y login**
+- [X] **T-10 — Crear vistas y templates de registro y login**
   En `usuarios/views.py` crear `RegistroView` y `LoginView` usando el sistema de autenticación de Django (`authenticate`, `login`, `logout`). Crear los templates `templates/usuarios/registro.html` y `templates/usuarios/login.html` con formularios HTML básicos. Validar: email único, contraseña mínimo 8 caracteres, municipio seleccionado.
 
-- [ ] **T-11 — Crear `LoginRequired` y decoradores de rol**
+- [X] **T-11 — Crear `LoginRequired` y decoradores de rol**
   En `usuarios/decorators.py` crear dos decoradores: `@login_required` (ya incluido en Django) para rutas que requieren sesión activa, y un decorador propio `@rol_requerido('operador')` que redirige a `/` si el usuario no tiene el rol correcto. Estos se usarán en todas las vistas protegidas.
 
-- [ ] **T-12 — Crear modelo `Reporte` y migración**
+- [X] **T-12 — Crear modelo `Reporte` y migración**
   En `reportes/models.py` crear el modelo `Reporte` con todos los campos definidos en la sección [Modelos de Datos](#3-modelos-de-datos). Registrar en `reportes/admin.py` con filtros por `estado`, `municipio` y `categoria`. Ejecutar `makemigrations reportes` y `migrate`.
 
-- [ ] **T-13 — Crear modelo `RegistroResiduo` y migración**
+- [X] **T-13 — Crear modelo `RegistroResiduo` y migración**
   En `residuos/models.py` crear el modelo `RegistroResiduo` con todos los campos definidos en la sección [Modelos de Datos](#3-modelos-de-datos). Agregar `unique_together = ('usuario', 'semana')` en la clase `Meta`. Registrar en `residuos/admin.py`. Ejecutar `makemigrations residuos` y `migrate`.
 
-- [ ] **T-14 — Crear superusuario y verificar admin**
+- [X] **T-14 — Crear superusuario y verificar admin**
   Ejecutar `python manage.py createsuperuser`. Acceder a `http://localhost:8000/admin/` y verificar que los modelos `CustomUser`, `Reporte` y `RegistroResiduo` aparecen correctamente con sus campos y filtros.
 
-- [ ] **T-15 — Crear template base (`base.html`)**
+- [X] **T-15 — Crear template base (`base.html`)**
   Crear `templates/base.html` que todos los demás templates heredarán con `{% extends 'base.html' %}`. Debe incluir: barra de navegación con el logo "SabanaLimpia", links según rol del usuario (`{% if user.rol == 'operador' %}`), bloque `{% block content %}`, carga de Leaflet.js y Chart.js desde CDN, y CSS base de la aplicación desde `static/css/main.css`.
 
-- [ ] **T-16 — Verificar flujo completo de autenticación**
+- [X] **T-16 — Verificar flujo completo de autenticación**
   Probar el ciclo completo en el navegador: registro de ciudadano → login → acceso a `/reportes/nuevo/` → logout → verificar que `/reportes/nuevo/` redirige a `/auth/login/` sin sesión. Este es el checkpoint de Semana 1.
 
 ---
