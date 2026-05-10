@@ -102,6 +102,72 @@
       border-top: 1px solid #d4edda;
     }
 
+      /* Dropdown menu para navegación con roles */
+    .nav-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .nav-dropdown-toggle {
+      cursor: pointer;
+      color: rgba(255,255,255,.85);
+      font-size: .9rem;
+      font-weight: 500;
+      padding: 0.4rem 0;
+    }
+    
+    .nav-dropdown-toggle:hover {
+      color: white;
+    }
+    
+    .nav-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--verde);
+      min-width: 180px;
+      border-radius: 8px;
+      padding: 0.5rem 0;
+      margin-top: 0.5rem;
+      box-shadow: var(--sombra);
+      z-index: 1000;
+    }
+    
+    .nav-dropdown:hover .nav-dropdown-menu {
+      display: block;
+    }
+    
+    .nav-dropdown-menu a {
+      display: block;
+      padding: 0.5rem 1rem;
+      color: rgba(255,255,255,.85) !important;
+      font-size: 0.85rem;
+    }
+    
+    .nav-dropdown-menu a:hover {
+      background: var(--verde-claro);
+      color: white !important;
+    }
+    
+    .nav-user {
+      color: var(--verde-claro);
+      font-weight: 500;
+      margin-left: 0.5rem;
+    }
+    
+    .nav-highlight {
+      background: var(--verde-claro);
+      color: var(--verde) !important;
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    
+    .nav-highlight:hover {
+      background: #74c69d;
+    }
+
     {% block extra_styles %}{% endblock %}
   </style>
 </head>
@@ -111,17 +177,52 @@
   <nav class="navbar">
     <a href="/" class="navbar__logo">Sabana<span>Limpia</span></a>
     <div class="navbar__links">
+      
+      <!-- Enlaces públicos (todos ven esto) -->
       <a href="/reportes/mapa/">Mapa de reportes</a>
       <a href="/residuos/estadisticas/">Estadísticas</a>
+      
       {% if user.is_authenticated %}
+        
+        <!-- ============================================ -->
+        <!-- CIUDADANO: acciones principales              -->
+        <!-- ============================================ -->
+        {% if user.rol == 'ciudadano' %}
+          <div class="nav-dropdown">
+            <span class="nav-dropdown-toggle">Reportes ▼</span>
+            <div class="nav-dropdown-menu">
+              <a href="/reportes/nuevo/">Nuevo reporte</a>
+              <a href="/reportes/mis-reportes/">Mis reportes</a>
+            </div>
+          </div>
+          
+          <div class="nav-dropdown">
+            <span class="nav-dropdown-toggle">Residuos ▼</span>
+            <div class="nav-dropdown-menu">
+              <a href="/residuos/nuevo/">Registrar esta semana</a>
+              <a href="/residuos/mis-registros/">Mis registros</a>
+            </div>
+          </div>
+        
+        <!-- ============================================ -->
+        <!-- OPERADOR: gestión de reportes                -->
+        <!-- ============================================ -->
+        {% elif user.rol == 'operador' %}
+          <a href="/panel/" class="nav-highlight">Panel de gestión</a>
+        {% endif %}
+        
+        <!-- Usuario info + logout (común a todos) -->
+        <span class="nav-user">{{ user.username }}</span>
         <a href="{% url 'usuarios:logout' %}"
-           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+          onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
           Cerrar sesión
         </a>
         <form id="logout-form" action="{% url 'usuarios:logout' %}" method="post" hidden>
           {% csrf_token %}
         </form>
+        
       {% else %}
+        <!-- Usuario no autenticado -->
         <a href="{% url 'usuarios:login' %}">Iniciar sesión</a>
         <a href="{% url 'usuarios:registro' %}" class="btn-nav">Regístrate</a>
       {% endif %}

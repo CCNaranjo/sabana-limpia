@@ -12,10 +12,10 @@ urlpatterns = [
     path('auth/', include('usuarios.urls')),
     
     # URLs de la app reportes (nuevo reporte, mis reportes, mapa)
-    #path('', include('reportes.urls')),        # ← incluye las rutas raíz de reportes
+    path('reportes/', include('reportes.urls')),        # ← incluye las rutas raíz de reportes
     
     # URLs de la app residuos (registro doméstico, estadísticas)
-    #path('residuos/', include('residuos.urls')),
+    path('residuos/', include('residuos.urls')),
 ]
 
 # Servir archivos multimedia (imágenes) solo en modo desarrollo
