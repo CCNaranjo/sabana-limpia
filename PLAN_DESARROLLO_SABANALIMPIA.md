@@ -271,28 +271,28 @@ Todas las rutas viven en Django. El navegador navega entre páginas HTML complet
 
 ---
 
-- [ ] **T-23 — Endpoint JSON para el mapa (`/api/reportes/mapa/`)**
+- [X] **T-23 — Endpoint JSON para el mapa (`/api/reportes/mapa/`)**
   Crear una vista en `reportes/views.py` que devuelve `JsonResponse` con la lista de reportes: solo los campos `id`, `latitud`, `longitud`, `categoria`, `estado`, `municipio` y `titulo`. Sin autenticación requerida. Este endpoint es consumido por Leaflet.js en el navegador mediante `fetch()`.
 
-- [ ] **T-24 — Página del mapa público de puntos críticos**
+- [X] **T-24 — Página del mapa público de puntos críticos**
   Crear `templates/reportes/mapa.html`. Cargar Leaflet.js desde CDN. Inicializar el mapa centrado en Sabana Centro (`lat: 4.96, lng: -74.04, zoom: 11`) con tiles de OpenStreetMap (gratuitos, sin API key). Al cargar la página, hacer `fetch('/api/reportes/mapa/')` y agregar un marcador por cada reporte con color según categoría usando `L.circleMarker`. Al hacer click en un marcador, mostrar popup con título, estado y municipio. Agregar selectores HTML (filtros locales en JS) por municipio, categoría y estado.
 
-- [ ] **T-25 — Panel del operador — lista de reportes**
+- [X] **T-25 — Panel del operador — lista de reportes**
   Crear `templates/panel/lista_reportes.html` y la vista protegida con `@rol_requerido('operador')`. La vista filtra `Reporte.objects.filter(municipio=request.user.municipio)` para que cada operador solo vea su municipio. Mostrar tabla con: ID, ciudadano, categoría, fecha, estado (badge), y botón "Gestionar" que lleva a `/panel/reporte/<id>/`.
 
-- [ ] **T-26 — Vista de detalle y cambio de estado (operador)**
+- [X] **T-26 — Vista de detalle y cambio de estado (operador)**
   Crear `templates/panel/detalle_reporte.html` y la vista protegida. Mostrar todos los datos del reporte: foto, descripción, coordenadas, historial de estados. Incluir formulario POST con: select de nuevo estado (En gestión / Resuelto / Rechazado) y textarea para nota de gestión (obligatoria si el estado es Resuelto o Rechazado). Al guardar, actualizar `estado`, `nota_operador`, `operador` y `updated_at` en la BD. Redirigir al panel con mensaje de éxito.
 
-- [ ] **T-27 — Filtros en el panel del operador**
+- [X] **T-27 — Filtros en el panel del operador**
   Agregar filtros GET al panel del operador: por estado (`?estado=pendiente`) y por categoría (`?categoria=escombros`). La vista lee los parámetros con `request.GET.get()` y aplica `.filter()` adicionales al queryset. Los selects de filtro en el template mantienen su valor seleccionado al recargar la página.
 
-- [ ] **T-28 — Notificaciones por email al cambiar estado**
+- [X] **T-28 — Notificaciones por email al cambiar estado**
   En `reportes/signals.py` crear un signal `post_save` sobre el modelo `Reporte`. Cuando el campo `estado` cambia, enviar un email al `reporte.usuario.email` con: número de reporte, nuevo estado y nota del operador si existe. En desarrollo, configurar `EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'` en `settings.py` para que el email se imprima en la consola de Django en lugar de enviarse realmente. Conectar el signal en `reportes/apps.py` dentro del método `ready()`.
 
-- [ ] **T-29 — Endpoint JSON para estadísticas (`/api/residuos/estadisticas/`)**
+- [X] **T-29 — Endpoint JSON para estadísticas (`/api/residuos/estadisticas/`)**
   Crear una vista en `residuos/views.py` que devuelve `JsonResponse` con los totales agrupados por municipio usando `values('municipio').annotate(total_organico=Sum('organico_kg'), ...)` de Django ORM. Sin autenticación requerida. Este endpoint es consumido por Chart.js en el navegador.
 
-- [ ] **T-30 — Página de estadísticas públicas**
+- [X] **T-30 — Página de estadísticas públicas**
   Crear `templates/residuos/estadisticas.html`. Cargar Chart.js desde CDN. Al cargar la página, hacer `fetch('/api/residuos/estadisticas/')` y renderizar: una gráfica de barras apiladas con kg por tipo de residuo por municipio, y un contador de reportes activos (pendiente + en_gestion) por municipio obtenido con una segunda consulta a la vista de reportes. Todo sin autenticación.
 
 ---
