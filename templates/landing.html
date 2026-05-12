@@ -1,0 +1,1159 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+        content="SabanaLimpia — plataforma ciudadana para reportar puntos críticos de residuos y registrar tus hábitos de reciclaje en Sabana Centro, Cundinamarca.">
+  <title>SabanaLimpia — Sabana Centro limpia y sostenible</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─── Reset & tokens ────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --verde:         #2d6a4f;
+      --verde-medio:   #40916c;
+      --verde-claro:   #52b788;
+      --verde-palido:  #d8f3dc;
+      --verde-xpalido: #f0faf4;
+      --tierra:        #b7791f;
+      --tierra-claro:  #f6e4bc;
+      --gris-texto:    #1b2a1e;
+      --gris-suave:    #6b7f6d;
+      --blanco:        #ffffff;
+      --sombra-verde:  rgba(45, 106, 79, 0.12);
+
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body:    'DM Sans', system-ui, sans-serif;
+
+      --radius-sm:   8px;
+      --radius-md:  14px;
+      --radius-lg:  24px;
+      --radius-xl:  40px;
+
+      --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--gris-texto);
+      background: var(--blanco);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── Utilidades ─────────────────────────────────────────────── */
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+    }
+
+    /* ─── Navbar ─────────────────────────────────────────────────── */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(45, 106, 79, 0.1);
+      transition: box-shadow var(--transition);
+    }
+
+    .navbar.scrolled {
+      box-shadow: 0 2px 20px var(--sombra-verde);
+    }
+
+    .navbar__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .navbar__brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .navbar__logo {
+      width: 32px;
+      height: 32px;
+      background: var(--verde);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .navbar__name {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      color: var(--verde);
+    }
+
+    .navbar__links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .navbar__link {
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--gris-suave);
+      text-decoration: none;
+      transition: color var(--transition), background var(--transition);
+    }
+
+    .navbar__link:hover {
+      color: var(--verde);
+      background: var(--verde-xpalido);
+    }
+
+    .navbar__cta {
+      padding: 0.5rem 1rem;
+      background: var(--verde);
+      color: var(--blanco) !important;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: background var(--transition), transform var(--transition);
+    }
+
+    .navbar__cta:hover {
+      background: #235940;
+      transform: translateY(-1px);
+    }
+
+    /* ─── Hero ───────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 64px;
+    }
+
+    /* Fondo con gradiente orgánico */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 60% 30%, rgba(82, 183, 136, 0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 20% 80%, rgba(183, 121, 31, 0.08) 0%, transparent 60%),
+        linear-gradient(180deg, var(--verde-xpalido) 0%, var(--blanco) 100%);
+      z-index: 0;
+    }
+
+    /* Patrón de puntos decorativos */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 480px; height: 480px;
+      background-image: radial-gradient(circle, rgba(45,106,79,0.12) 1.5px, transparent 1.5px);
+      background-size: 28px 28px;
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .hero__inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hero__content {}
+
+    .hero__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--verde-palido);
+      border: 1px solid #b8e0c8;
+      border-radius: 20px;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--verde);
+      margin-bottom: 1.25rem;
+
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fade-up 0.6s 0.1s forwards;
+    }
+
+    .hero__title {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      line-height: 1.08;
+      color: var(--gris-texto);
+      margin-bottom: 1.25rem;
+
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fade-up 0.7s 0.2s forwards;
+    }
+
+    .hero__title em {
+      font-style: italic;
+      color: var(--verde-medio);
+    }
+
+    .hero__desc {
+      font-size: 1.08rem;
+      color: var(--gris-suave);
+      line-height: 1.65;
+      max-width: 480px;
+      margin-bottom: 2rem;
+
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fade-up 0.7s 0.35s forwards;
+    }
+
+    .hero__actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fade-up 0.7s 0.5s forwards;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.8rem 1.5rem;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: var(--font-body);
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn--primary {
+      background: var(--verde);
+      color: var(--blanco);
+      box-shadow: 0 4px 20px rgba(45, 106, 79, 0.32);
+    }
+
+    .btn--primary:hover {
+      background: #235940;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(45, 106, 79, 0.38);
+    }
+
+    .btn--outline {
+      background: transparent;
+      color: var(--verde);
+      border: 1.5px solid var(--verde-claro);
+    }
+
+    .btn--outline:hover {
+      background: var(--verde-palido);
+      transform: translateY(-2px);
+    }
+
+    /* Imagen decorativa hero */
+    .hero__visual {
+      position: relative;
+      opacity: 0;
+      transform: translateX(24px);
+      animation: fade-left 0.8s 0.4s forwards;
+    }
+
+    .hero__map-card {
+      background: var(--blanco);
+      border: 1px solid #d4edda;
+      border-radius: var(--radius-lg);
+      box-shadow:
+        0 20px 60px rgba(45, 106, 79, 0.14),
+        0 4px 16px rgba(45, 106, 79, 0.08);
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Mini mapa decorativo SVG */
+    .hero__map-svg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero__map-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, rgba(216,243,220,0.3) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Badges flotantes en la card */
+    .hero__badge {
+      position: absolute;
+      background: var(--blanco);
+      border: 1px solid #e2ede6;
+      border-radius: var(--radius-md);
+      padding: 0.6rem 0.9rem;
+      box-shadow: 0 4px 16px rgba(45, 106, 79, 0.14);
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--gris-texto);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .hero__badge--top {
+      top: 1rem; left: 1rem;
+      animation-delay: 0s;
+    }
+
+    .hero__badge--bottom {
+      bottom: 1rem; right: 1rem;
+      animation-delay: 1.5s;
+    }
+
+    .hero__badge-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #e07b3b;
+    }
+
+    .hero__badge-dot--green {
+      background: var(--verde-claro);
+    }
+
+    /* ─── Estadísticas ───────────────────────────────────────────── */
+    .stats {
+      padding: 5rem 0;
+      background: var(--verde);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stats::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 320px; height: 320px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+    }
+
+    .stats::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: -40px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 50%;
+    }
+
+    .stats__grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-item__number {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 4vw, 3.2rem);
+      color: var(--blanco);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-item__number[data-count] {
+      /* El JS animará desde 0 hasta el valor */
+    }
+
+    .stat-item__label {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.7);
+      font-weight: 500;
+    }
+
+    .stat-item__icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.6rem;
+      display: block;
+    }
+
+    /* ─── Propuesta de valor ─────────────────────────────────────── */
+    .propuesta {
+      padding: 6rem 0;
+      background: var(--blanco);
+    }
+
+    .section__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--verde);
+      margin-bottom: 0.75rem;
+    }
+
+    .section__title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      color: var(--gris-texto);
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      max-width: 560px;
+    }
+
+    .section__sub {
+      font-size: 1rem;
+      color: var(--gris-suave);
+      max-width: 520px;
+      line-height: 1.65;
+      margin-bottom: 3.5rem;
+    }
+
+    .propuesta__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .propuesta__card {
+      background: var(--verde-xpalido);
+      border: 1px solid #d4edda;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+
+    .propuesta__card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px var(--sombra-verde);
+    }
+
+    .propuesta__card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--verde-claro);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .propuesta__card:hover::before {
+      opacity: 1;
+    }
+
+    .propuesta__number {
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      line-height: 1;
+      color: rgba(45, 106, 79, 0.12);
+      position: absolute;
+      top: 1rem; right: 1.25rem;
+      font-style: italic;
+    }
+
+    .propuesta__icon-wrap {
+      width: 52px; height: 52px;
+      background: var(--verde-palido);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+      border: 1px solid #b8e0c8;
+    }
+
+    .propuesta__card-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--gris-texto);
+      margin-bottom: 0.6rem;
+    }
+
+    .propuesta__card-desc {
+      font-size: 0.9rem;
+      color: var(--gris-suave);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .propuesta__link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--verde);
+      text-decoration: none;
+      transition: gap var(--transition);
+    }
+
+    .propuesta__link:hover {
+      gap: 0.6rem;
+    }
+
+    /* ─── CTA final ──────────────────────────────────────────────── */
+    .cta {
+      padding: 6rem 0;
+      background: linear-gradient(135deg, var(--verde) 0%, var(--verde-medio) 100%);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1.5px, transparent 1.5px);
+      background-size: 32px 32px;
+    }
+
+    .cta__inner {
+      position: relative;
+      z-index: 1;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    .cta__eyebrow {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 1.25rem;
+    }
+
+    .cta__title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      color: var(--blanco);
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .cta__title em {
+      font-style: italic;
+      opacity: 0.85;
+    }
+
+    .cta__sub {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 2.25rem;
+      line-height: 1.6;
+    }
+
+    .cta__actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn--white {
+      background: var(--blanco);
+      color: var(--verde);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .btn--white:hover {
+      background: var(--verde-xpalido);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.2);
+    }
+
+    .btn--ghost {
+      background: transparent;
+      color: var(--blanco);
+      border: 1.5px solid rgba(255,255,255,0.4);
+    }
+
+    .btn--ghost:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-2px);
+    }
+
+    /* ─── Footer ─────────────────────────────────────────────────── */
+    .footer {
+      background: var(--gris-texto);
+      padding: 2.5rem 0;
+    }
+
+    .footer__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer__brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .footer__logo {
+      width: 28px; height: 28px;
+      background: var(--verde-claro);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .footer__name {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--blanco);
+    }
+
+    .footer__text {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.45);
+    }
+
+    .footer__links {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .footer__link {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+
+    .footer__link:hover {
+      color: var(--verde-claro);
+    }
+
+    /* ─── Animaciones ────────────────────────────────────────────── */
+    @keyframes fade-up {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fade-left {
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-6px); }
+    }
+
+    /* Elementos que se revelan al hacer scroll */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── Responsive ─────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero__inner {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        text-align: center;
+      }
+
+      .hero__desc {
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero__actions {
+        justify-content: center;
+      }
+
+      .hero__visual {
+        display: none; /* El mapa decorativo se oculta en tablet/móvil */
+      }
+
+      .stats__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2.5rem 1.5rem;
+      }
+
+      .propuesta__grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .stats__grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .navbar__links .navbar__link:not(.navbar__cta) {
+        display: none;
+      }
+
+      .btn {
+        padding: 0.75rem 1.1rem;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Navbar ──────────────────────────────────────────────────── -->
+  <nav class="navbar" id="navbar" role="navigation" aria-label="Navegación principal">
+    <div class="container">
+      <div class="navbar__inner">
+
+        <a href="/" class="navbar__brand" aria-label="SabanaLimpia — inicio">
+          <div class="navbar__logo" aria-hidden="true">🌿</div>
+          <span class="navbar__name">SabanaLimpia</span>
+        </a>
+
+        <div class="navbar__links">
+          <a href="/reportes/mapa/" class="navbar__link">Ver mapa</a>
+          <a href="#propuesta"      class="navbar__link">¿Cómo funciona?</a>
+
+          {% if user.is_authenticated %}
+            {% if user.rol == 'ciudadano' %}
+              <a href="{% url 'reportes:mis_reportes' %}" class="navbar__link">Mis reportes</a>
+              <a href="{% url 'reportes:nuevo_reporte' %}" class="navbar__cta">+ Reportar</a>
+            {% elif user.rol == 'operador' or user.rol == 'admin' %}
+              <a href="/panel/" class="navbar__link">Panel</a>
+              <a href="{% url 'usuarios:logout' %}" class="navbar__link">Salir</a>
+            {% endif %}
+          {% else %}
+            <a href="{% url 'usuarios:login' %}"    class="navbar__link">Iniciar sesión</a>
+            <a href="{% url 'usuarios:registro' %}" class="navbar__cta">Crear cuenta</a>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- ─── Hero ────────────────────────────────────────────────────── -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container">
+      <div class="hero__inner">
+
+        <div class="hero__content">
+          <div class="hero__eyebrow">
+            <span>🌿</span> Sabana Centro, Cundinamarca
+          </div>
+
+          <h1 class="hero__title" id="hero-title">
+            La Sabana merece<br>
+            estar <em>limpia</em>
+          </h1>
+
+          <p class="hero__desc">
+            Reporta puntos críticos de basura, registra tus residuos domésticos
+            y transforma tu municipio junto a miles de ciudadanos comprometidos
+            con un entorno más limpio.
+          </p>
+
+          <div class="hero__actions">
+            <a href="/auth/registro" class="btn btn--primary">
+              <span>🚀</span> Únete ahora — es gratis
+            </a>
+            <a href="/reportes/mapa/" class="btn btn--outline">
+              <span>🗺️</span> Ver el mapa
+            </a>
+          </div>
+        </div>
+
+        <!-- Tarjeta decorativa visual -->
+        <div class="hero__visual" aria-hidden="true">
+          <div class="hero__map-card">
+            <!-- Mapa SVG simplificado — evocador, no funcional -->
+            <svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg" class="hero__map-svg">
+              <rect width="480" height="360" fill="#f0f4f0"/>
+
+              <!-- Calles -->
+              <line x1="0" y1="120" x2="480" y2="100" stroke="#e2e8e2" stroke-width="8"/>
+              <line x1="0" y1="200" x2="480" y2="220" stroke="#e2e8e2" stroke-width="6"/>
+              <line x1="140" y1="0" x2="160" y2="360" stroke="#e2e8e2" stroke-width="6"/>
+              <line x1="300" y1="0" x2="320" y2="360" stroke="#e2e8e2" stroke-width="5"/>
+              <line x1="0" y1="290" x2="480" y2="270" stroke="#e2e8e2" stroke-width="5"/>
+
+              <!-- Zonas verdes -->
+              <ellipse cx="220" cy="170" rx="60" ry="45" fill="#d8f3dc" opacity="0.7"/>
+              <ellipse cx="380" cy="80" rx="40" ry="30" fill="#d8f3dc" opacity="0.5"/>
+
+              <!-- Río estilizado -->
+              <path d="M 0 290 Q 120 270 240 280 T 480 265" stroke="#b8e0c8" stroke-width="10" fill="none" opacity="0.6"/>
+
+              <!-- Marcadores de puntos críticos -->
+              <circle cx="160" cy="130" r="10" fill="#e07b3b" opacity="0.9"/>
+              <circle cx="160" cy="130" r="10" fill="#e07b3b" opacity="0.3">
+                <animate attributeName="r" values="10;18;10" dur="2s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.3;0;0.3" dur="2s" repeatCount="indefinite"/>
+              </circle>
+
+              <circle cx="310" cy="190" r="8" fill="#3b82f6" opacity="0.9"/>
+              <circle cx="310" cy="190" r="8" fill="#3b82f6" opacity="0.3">
+                <animate attributeName="r" values="8;16;8" dur="2.5s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.3;0;0.3" dur="2.5s" repeatCount="indefinite"/>
+              </circle>
+
+              <circle cx="240" cy="240" r="9" fill="#e07b3b" opacity="0.9"/>
+              <circle cx="240" cy="240" r="9" fill="#e07b3b" opacity="0.3">
+                <animate attributeName="r" values="9;17;9" dur="1.8s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.3;0;0.3" dur="1.8s" repeatCount="indefinite"/>
+              </circle>
+
+              <circle cx="390" cy="280" r="7" fill="#3b82f6" opacity="0.9"/>
+              <circle cx="80"  cy="220" r="8" fill="#e07b3b" opacity="0.9"/>
+              <circle cx="420" cy="140" r="6" fill="#e07b3b" opacity="0.9"/>
+            </svg>
+            <div class="hero__map-overlay"></div>
+
+            <!-- Badge flotante superior -->
+            <div class="hero__badge hero__badge--top">
+              <span class="hero__badge-dot"></span>
+              Reporte activo · Chía
+            </div>
+
+            <!-- Badge flotante inferior -->
+            <div class="hero__badge hero__badge--bottom">
+              <span class="hero__badge-dot hero__badge-dot--green"></span>
+              En gestión · Cajicá
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ─── Estadísticas ────────────────────────────────────────────── -->
+  <section class="stats" aria-labelledby="stats-heading">
+    <h2 id="stats-heading" class="visually-hidden">Estadísticas del proyecto</h2>
+    <div class="container">
+      <div class="stats__grid">
+
+        <div class="stat-item reveal">
+          <span class="stat-item__icon" aria-hidden="true">📍</span>
+          <div class="stat-item__number"
+               data-count="{{ total_reportes }}"
+               id="count-reportes">0</div>
+          <div class="stat-item__label">Reportes recibidos</div>
+        </div>
+
+        <div class="stat-item reveal">
+          <span class="stat-item__icon" aria-hidden="true">✅</span>
+          <div class="stat-item__number"
+               data-count="{{ total_resueltos }}"
+               id="count-resueltos">0</div>
+          <div class="stat-item__label">Puntos resueltos</div>
+        </div>
+
+        <div class="stat-item reveal">
+          <span class="stat-item__icon" aria-hidden="true">🏙️</span>
+          <div class="stat-item__number"
+               data-count="{{ total_municipios }}"
+               id="count-municipios">0</div>
+          <div class="stat-item__label">Municipios cubiertos</div>
+        </div>
+
+        <div class="stat-item reveal">
+          <span class="stat-item__icon" aria-hidden="true">♻️</span>
+          <div class="stat-item__number"
+               data-count="{{ total_registros }}"
+               id="count-registros">0</div>
+          <div class="stat-item__label">Registros de residuos</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ─── Propuesta de valor ──────────────────────────────────────── -->
+  <section class="propuesta" id="propuesta" aria-labelledby="propuesta-heading">
+    <div class="container">
+
+      <div class="reveal">
+        <div class="section__eyebrow">
+          <span>⚡</span> ¿Cómo funciona?
+        </div>
+        <h2 class="section__title" id="propuesta-heading">
+          Tres pasos para transformar tu municipio
+        </h2>
+        <p class="section__sub">
+          No necesitas ser experto en medio ambiente. Solo necesitas tu celular
+          y dos minutos de tu tiempo.
+        </p>
+      </div>
+
+      <div class="propuesta__grid">
+
+        <!-- Bloque 1: Reporta -->
+        <div class="propuesta__card reveal">
+          <span class="propuesta__number" aria-hidden="true">01</span>
+          <div class="propuesta__icon-wrap" aria-hidden="true">📍</div>
+          <h3 class="propuesta__card-title">Reporta</h3>
+          <p class="propuesta__card-desc">
+            Encontraste un punto crítico de basura en tu barrio o municipio.
+            Toma una foto, activa tu ubicación y envía el reporte en menos de
+            un minuto. El operador municipal lo recibe al instante.
+          </p>
+          <a href="{% url 'reportes:nuevo_reporte' %}" class="propuesta__link">
+            Crear reporte <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <!-- Bloque 2: Registra -->
+        <div class="propuesta__card reveal">
+          <span class="propuesta__number" aria-hidden="true">02</span>
+          <div class="propuesta__icon-wrap" aria-hidden="true">♻️</div>
+          <h3 class="propuesta__card-title">Registra</h3>
+          <p class="propuesta__card-desc">
+            Cada semana, registra los kilogramos de residuos que genera tu hogar
+            por tipo: orgánico, reciclable, peligroso. Tus datos alimentan
+            estadísticas reales que guían decisiones municipales.
+          </p>
+          <a href="{% url 'residuos:nuevo_registro' %}" class="propuesta__link">
+            Registrar residuos <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <!-- Bloque 3: Transforma -->
+        <div class="propuesta__card reveal">
+          <span class="propuesta__number" aria-hidden="true">03</span>
+          <div class="propuesta__icon-wrap" aria-hidden="true">🌱</div>
+          <h3 class="propuesta__card-title">Transforma</h3>
+          <p class="propuesta__card-desc">
+            El mapa público muestra en tiempo real los puntos activos e resueltos.
+            Las estadísticas abiertas permiten a alcaldías, universidades y
+            ciudadanos tomar decisiones basadas en datos reales de su región.
+          </p>
+          <a href="/reportes/mapa/" class="propuesta__link">
+            Ver el mapa <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ─── CTA final ────────────────────────────────────────────────── -->
+  <section class="cta" aria-labelledby="cta-heading">
+    <div class="container">
+      <div class="cta__inner reveal">
+
+        <div class="cta__eyebrow">🌿 Únete hoy</div>
+
+        <h2 class="cta__title" id="cta-heading">
+          Sabana Centro <em>limpia</em><br>
+          empieza contigo
+        </h2>
+
+        <p class="cta__sub">
+          Regístrate gratis, reporta tu primer punto crítico y forma parte
+          de la comunidad que está cambiando la Sabana.
+        </p>
+
+        <div class="cta__actions">
+          <a href="{% url 'usuarios:registro' %}" class="btn btn--white">
+            <span>🚀</span> Crear cuenta gratis
+          </a>
+          <a href="/reportes/mapa/" class="btn btn--ghost">
+            <span>🗺️</span> Explorar el mapa
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ─── Footer ──────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+
+        <a href="/" class="footer__brand" aria-label="SabanaLimpia">
+          <div class="footer__logo" aria-hidden="true">🌿</div>
+          <span class="footer__name">SabanaLimpia</span>
+        </a>
+
+        <span class="footer__text">
+          Proyecto académico · Sabana Centro, Cundinamarca · 2026
+        </span>
+
+        <nav class="footer__links" aria-label="Links del footer">
+          <a href="/reportes/mapa/" class="footer__link">Mapa público</a>
+          <a href="{% url 'usuarios:registro' %}" class="footer__link">Registro</a>
+          <a href="{% url 'usuarios:login' %}"    class="footer__link">Iniciar sesión</a>
+        </nav>
+
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ─── Scripts ─────────────────────────────────────────────────── -->
+  <script>
+  (function () {
+    'use strict';
+
+    // ── Navbar scroll shadow ───────────────────────────────────────
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', function () {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+
+    // ── Intersection Observer — revelar elementos al scroll ────────
+    const revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              io.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15 }
+      );
+      revealEls.forEach(function (el) { io.observe(el); });
+    } else {
+      // Fallback: mostrar todo sin animación
+      revealEls.forEach(function (el) { el.classList.add('visible'); });
+    }
+
+
+    // ── Contador animado de estadísticas ──────────────────────────
+    /**
+     * Anima un número desde 0 hasta `target` en `duration` ms.
+     * Usa requestAnimationFrame para suavidad.
+     * Se dispara cuando el elemento entra en el viewport.
+     */
+    function animateCount(el, target, duration) {
+      const start     = performance.now();
+      const startVal  = 0;
+
+      function step(now) {
+        const elapsed  = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // Easing: ease-out cuadrático
+        const eased    = 1 - Math.pow(1 - progress, 3);
+        const current  = Math.round(startVal + (target - startVal) * eased);
+        el.textContent = current.toLocaleString('es-CO');
+        if (progress < 1) requestAnimationFrame(step);
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    // Observar los contadores — animar solo cuando son visibles
+    const counters = document.querySelectorAll('[data-count]');
+    if ('IntersectionObserver' in window && counters.length) {
+      const counterIO = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              const el     = entry.target;
+              const target = parseInt(el.dataset.count, 10) || 0;
+              animateCount(el, target, 1400);
+              counterIO.unobserve(el);
+            }
+          });
+        },
+        { threshold: 0.4 }
+      );
+      counters.forEach(function (el) { counterIO.observe(el); });
+    } else {
+      // Fallback: mostrar el valor final directamente
+      counters.forEach(function (el) {
+        const target = parseInt(el.dataset.count, 10) || 0;
+        el.textContent = target.toLocaleString('es-CO');
+      });
+    }
+
+  })();
+  </script>
+
+</body>
+</html>

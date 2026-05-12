@@ -48,7 +48,7 @@ class RegistroView(View):
     def _default_redirect(self, user):
         """Redirige según el rol después del registro."""
         if user.es_operador() or user.es_admin():
-            return '/admin/'        # ajustar cuando exista la app panel
+            return '/panel/'        # ajustar cuando exista la app panel
         return '/reportes/nuevo/'  # ajustar cuando exista la app reportes
 
 
@@ -116,4 +116,4 @@ def logout_view(request):
     if request.method == 'POST':
         logout(request)
         messages.info(request, 'Has cerrado sesión correctamente.')
-    return redirect('/auth/login/')  # ajustar cuando exista la landing page
+    return redirect('landing')  # ajustar cuando exista la landing page
