@@ -10,22 +10,32 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from decouple import config
-import os
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# --- VARIABLES DE ENTORNO SEGURAS (para local y producción) ---
+# En producción, las variables se definen en el panel de Render.
+# En local, python-decouple las lee desde el archivo .env
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
+# 1. SECRET_KEY (Obligatoria)
+# Usa config() para local, pero permite que sea leída desde entorno en producción
 SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
+
+# 2. DEBUG (Obligatorio)
+DEBUG = config('DEBUG', default=False, cast=bool)
+
+# 3. ALLOWED_HOSTS (Ahora con un valor por defecto seguro para Render)
+# Si no existe la variable, usamos una lista básica para desarrollo.
+# Render inyecta la variable RENDER_EXTERNAL_HOSTNAME automáticamente.
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,.onrender.com').split(',')
+
+# --- CONFIGURACIÓN DE BASE DE DATOS ---
+# Esta es la parte más importante: usar DATABASE_URL si existe, si no, la configuración local.
+import dj_database_url
 
 
 # Application definition
@@ -84,13 +94,26 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        # Render proveerá la variable DATABASE_URL en producción
-        default='postgresql://postgres:postgres@localhost:5432/sabanalimpia',
-        conn_max_age=600
-    )
-}
+if 'DATABASE_URL' in os.environ:
+    # Estamos en producción (Render) o tenemos la variable configurada
+    DATABASES = {
+        'default': dj_database_url.config(
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    # Estamos en local, usamos los valores de nuestro .env
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST'),
+            'PORT': config('DB_PORT'),
+        }
+    }
 
 # Hosts - Agregar .onrender.com para que funcione en Render
 if 'RENDER_EXTERNAL_HOSTNAME' in os.environ:
