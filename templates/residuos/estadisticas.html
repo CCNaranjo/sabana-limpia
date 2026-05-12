@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block title %}Estadísticas de Residuos{% endblock %}
+
+{% block extra_styles %}
+<style>
+.stats-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.stats-header h1 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--verde);
+  margin-bottom: .5rem;
+}
+.stats-header p { color: var(--gris-suave); font-size: .95rem; }
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.card {
+  background: var(--blanco);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 1.5rem;
+}
+.card h2 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--verde);
+  margin-bottom: 1rem;
+}
+.chart-container { position: relative; height: 320px; }
+
+.sin-datos {
+  text-align: center;
+  padding: 3rem;
+  color: var(--gris-suave);
+  background: var(--blanco);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+
+@media (max-width: 768px) {
+  .charts-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="stats-header">
+  <h1>Estadísticas de residuos</h1>
+  <p>Datos de generación doméstica por municipio — Sabana Centro</p>
+</div>
+
+<div id="sin-datos" class="sin-datos" style="display:none;">
+  <p>Aún no hay registros de residuos domésticos en el sistema.</p>
+</div>
+
+<div id="charts-wrapper" class="charts-grid">
+  <div class="card">
+    <h2>Kg por tipo de residuo y municipio</h2>
+    <div class="chart-container">
+      <canvas id="grafica-barras"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Distribución total de residuos</h2>
+    <div class="chart-container">
+      <canvas id="grafica-dona"></canvas>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const COLORES = {
+  organico:       '#52b788',
+  reciclable:     '#74c69d',
+  no_reciclable:  '#e63946',
+  especial:       '#f4a261',
+  peligroso:      '#9b2226',
+};
+
+const LABELS_TIPO = ['Orgánico', 'Reciclable', 'No reciclable', 'Especial', 'Peligroso'];
+const KEYS        = ['total_organico', 'total_reciclable', 'total_no_reciclable', 'total_especial', 'total_peligroso'];
+const COLORES_ARR = Object.values(COLORES);
+
+async function cargarEstadisticas() {
+  const res  = await fetch("{% url 'residuos:estadisticas_json' %}");
+  const data = await res.json();
+  const rows = data.estadisticas;
+
+  if (!rows.length) {
+    document.getElementById('sin-datos').style.display = 'block';
+    document.getElementById('charts-wrapper').style.display = 'none';
+    return;
+  }
+
+  const municipios = rows.map(r => r.municipio);
+
+  // ── Gráfica de barras apiladas ──────────────────────────
+  const datasetsBarras = KEYS.map((key, i) => ({
+    label:           LABELS_TIPO[i],
+    data:            rows.map(r => +(r[key] || 0).toFixed(2)),
+    backgroundColor: COLORES_ARR[i],
+    borderRadius:    4,
+  }));
+
+  new Chart(document.getElementById('grafica-barras'), {
+    type: 'bar',
+    data: { labels: municipios, datasets: datasetsBarras },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } },
+      scales: {
+        x: { stacked: true },
+        y: { stacked: true, title: { display: true, text: 'kg' } },
+      },
+    },
+  });
+
+  // ── Gráfica de dona — totales globales ──────────────────
+  const totalesTipo = KEYS.map(key =>
+    +rows.reduce((acc, r) => acc + (r[key] || 0), 0).toFixed(2)
+  );
+
+  new Chart(document.getElementById('grafica-dona'), {
+    type: 'doughnut',
+    data: {
+      labels: LABELS_TIPO,
+      datasets: [{
+        data:            totalesTipo,
+        backgroundColor: COLORES_ARR,
+        borderWidth:     2,
+        borderColor:     '#fff',
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } },
+    },
+  });
+}
+
+cargarEstadisticas();
+</script>
+{% endblock %}

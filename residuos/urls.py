@@ -20,4 +20,6 @@ app_name = 'residuos'
 urlpatterns = [
     path('nuevo/',         views.NuevoRegistroView.as_view(), name='nuevo_registro'),
     path('mis-registros/', views.MisRegistrosView.as_view(),  name='mis_registros'),
+    path('estadisticas/',     views.EstadisticasView.as_view(),     name='estadisticas'),
+    path('estadisticas-json/', views.EstadisticasJsonView.as_view(), name='estadisticas_json'),
 ]

@@ -152,3 +152,38 @@ class ConfirmacionView(CiudadanoRequeridoMixin, View):
     def get(self, request, pk: int):
         reporte = get_object_or_404(Reporte, pk=pk, usuario=request.user)
         return render(request, self.template_name, {"reporte": reporte})
+    
+# ---------------------------------------------------------------------------
+# T-23 — Endpoint JSON para el mapa
+# ---------------------------------------------------------------------------
+
+from django.http import JsonResponse
+
+class MapaJsonView(View):
+    """
+    GET /api/reportes/mapa/
+    Devuelve JSON con los reportes para Leaflet.js.
+    Sin autenticación — es un endpoint público.
+    Solo expone los campos necesarios para los markers del mapa.
+    """
+
+    def get(self, request):
+        reportes = (
+            Reporte.objects
+            .exclude(estado=Reporte.Estado.RECHAZADO)
+            .only('id', 'latitud', 'longitud', 'categoria', 'estado', 'municipio', 'titulo')
+            .values('id', 'latitud', 'longitud', 'categoria', 'estado', 'municipio', 'titulo')
+        )
+
+        return JsonResponse({'reportes': list(reportes)})
+    
+# ---------------------------------------------------------------------------
+# T-24 — Mapa público
+# ---------------------------------------------------------------------------
+
+class MapaView(View):
+    """Página pública del mapa de reportes. No requiere autenticación."""
+    template_name = "reportes/mapa.html"
+
+    def get(self, request):
+        return render(request, self.template_name)

@@ -18,6 +18,8 @@ app_name = "reportes"
 urlpatterns = [
     path("nuevo/", views.NuevoReporteView.as_view(), name="nuevo_reporte"),
     path("mis-reportes/", views.MisReportesView.as_view(), name="mis_reportes"),
+    path("mapa-json/", views.MapaJsonView.as_view(), name="mapa_json"),
+    path("mapa/", views.MapaView.as_view(), name="mapa"),
     path(
         "confirmacion/<int:pk>/",
         views.ConfirmacionView.as_view(),

@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+
+{% block title %}Mapa de Reportes{% endblock %}
+
+{% block extra_styles %}
+<style>
+  .main { overflow: visible; padding: 0; }
+
+  .mapa-wrapper {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    height: calc(100vh - 80px);
+  }
+
+/* Panel de filtros */
+.filtros-panel {
+  background: var(--blanco);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.filtros-panel h2 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--verde);
+  margin-bottom: .25rem;
+}
+.filtro-group label {
+  display: block;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--gris-texto);
+  margin-bottom: .35rem;
+}
+.filtro-group select {
+  width: 100%;
+  padding: .5rem .7rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: .9rem;
+  background: #fafafa;
+  cursor: pointer;
+}
+.filtro-group select:focus {
+  outline: none;
+  border-color: var(--verde-claro);
+}
+.btn-reset {
+  width: 100%;
+  padding: .6rem;
+  background: transparent;
+  border: 1.5px solid var(--verde);
+  color: var(--verde);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.btn-reset:hover { background: var(--verde); color: var(--blanco); }
+
+.contador {
+  font-size: .82rem;
+  color: var(--gris-suave);
+  text-align: center;
+  padding-top: .5rem;
+  border-top: 1px solid #e5e7eb;
+}
+.contador span { font-weight: 700; color: var(--verde); }
+
+/* Leyenda */
+.leyenda { display: flex; flex-direction: column; gap: .4rem; }
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .8rem;
+  color: var(--gris-texto);
+}
+.leyenda-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Mapa */
+#mapa {
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  z-index: 0;
+  height: calc(100vh - 140px);
+  min-height: 500px;
+  width: 100%;
+}
+
+/* Popup Leaflet */
+.popup-content { font-family: var(--font-body); min-width: 180px; }
+.popup-content h4 { font-size: .95rem; margin-bottom: .3rem; color: var(--gris-texto); }
+.popup-badge {
+  display: inline-block;
+  padding: .2rem .6rem;
+  border-radius: 12px;
+  font-size: .75rem;
+  font-weight: 600;
+  margin-bottom: .4rem;
+}
+.popup-meta { font-size: .8rem; color: var(--gris-suave); }
+
+@media (max-width: 768px) {
+  .mapa-wrapper { grid-template-columns: 1fr; height: auto; }
+  #mapa { height: 60vh; }
+  .filtros-panel { order: 2; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mapa-wrapper">
+
+  <!-- Panel de filtros -->
+  <aside class="filtros-panel">
+    <div>
+      <h2>🗺 Mapa de reportes</h2>
+      <p style="font-size:.82rem;color:var(--gris-suave);">Puntos críticos de residuos en Sabana Centro</p>
+    </div>
+
+    <div class="filtro-group">
+      <label for="filtro-municipio">Municipio</label>
+      <select id="filtro-municipio">
+        <option value="">Todos</option>
+        <option>Chia</option>
+        <option>Cajica</option>
+        <option>Zipaquira</option>
+        <option>Cogua</option>
+        <option>Tausa</option>
+        <option>Sopo</option>
+        <option>Tocancipa</option>
+        <option>Gachancipa</option>
+        <option>Nemocon</option>
+        <option>Supata</option>
+        <option>Tabio</option>
+      </select>
+    </div>
+
+    <div class="filtro-group">
+      <label for="filtro-estado">Estado</label>
+      <select id="filtro-estado">
+        <option value="">Todos</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="en_gestion">En gestión</option>
+        <option value="resuelto">Resuelto</option>
+      </select>
+    </div>
+
+    <div class="filtro-group">
+      <label for="filtro-categoria">Categoría</label>
+      <select id="filtro-categoria">
+        <option value="">Todas</option>
+        <option value="residuos_solidos">Residuos sólidos</option>
+        <option value="escombros">Escombros</option>
+        <option value="residuos_peligrosos">Residuos peligrosos</option>
+        <option value="raee">RAEE (Electrónicos)</option>
+        <option value="organicos">Orgánicos</option>
+        <option value="otro">Otro</option>
+      </select>
+    </div>
+
+    <button class="btn-reset" onclick="resetFiltros()">Limpiar filtros</button>
+
+    <div class="contador">
+      Mostrando <span id="contador-markers">0</span> reportes
+    </div>
+
+    <!-- Leyenda de colores -->
+    <div>
+      <p style="font-size:.82rem;font-weight:600;margin-bottom:.5rem;">Categorías</p>
+      <div class="leyenda">
+        <div class="leyenda-item"><div class="leyenda-dot" style="background:#e63946"></div>Residuos sólidos</div>
+        <div class="leyenda-item"><div class="leyenda-dot" style="background:#f4a261"></div>Escombros</div>
+        <div class="leyenda-item"><div class="leyenda-dot" style="background:#9b2226"></div>Residuos peligrosos</div>
+        <div class="leyenda-item"><div class="leyenda-dot" style="background:#6a4c93"></div>RAEE</div>
+        <div class="leyenda-item"><div class="leyenda-dot" style="background:#52b788"></div>Orgánicos</div>
+        <div class="leyenda-item"><div class="leyenda-dot" style="background:#adb5bd"></div>Otro</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mapa Leaflet -->
+  <div id="mapa"></div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// ── Inicializar mapa centrado en Sabana Centro ──────────────
+const mapa = L.map('mapa').setView([4.96, -74.04], 11);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  maxZoom: 18,
+}).addTo(mapa);
+
+// ── Colores por categoría ───────────────────────────────────
+const COLORES = {
+  residuos_solidos:   '#e63946',
+  escombros:          '#f4a261',
+  residuos_peligrosos:'#9b2226',
+  raee:               '#6a4c93',
+  organicos:          '#52b788',
+  otro:               '#adb5bd',
+};
+
+const ESTADOS_LABEL = {
+  pendiente:  { label: 'Pendiente',   color: '#6c757d' },
+  en_gestion: { label: 'En gestión',  color: '#ffc107' },
+  resuelto:   { label: 'Resuelto',    color: '#2d6a4f' },
+};
+
+const CATEGORIAS_LABEL = {
+  residuos_solidos:    'Residuos sólidos',
+  escombros:           'Escombros',
+  residuos_peligrosos: 'Residuos peligrosos',
+  raee:                'RAEE',
+  organicos:           'Orgánicos',
+  otro:                'Otro',
+};
+
+// ── Estado de datos y markers ───────────────────────────────
+let todosLosReportes = [];
+let markers = [];
+
+// ── Cargar datos del endpoint ───────────────────────────────
+async function cargarReportes() {
+  try {
+    const res = await fetch("{% url 'reportes:mapa_json' %}");
+    const data = await res.json();
+    todosLosReportes = data.reportes;
+    renderMarkers(todosLosReportes);
+  } catch (err) {
+    console.error('Error cargando reportes:', err);
+  }
+}
+
+// ── Crear y mostrar markers ─────────────────────────────────
+function renderMarkers(reportes) {
+  // Limpiar markers anteriores
+  markers.forEach(m => mapa.removeLayer(m));
+  markers = [];
+
+  reportes.forEach(r => {
+    const color = COLORES[r.categoria] || '#adb5bd';
+    const estado = ESTADOS_LABEL[r.estado] || { label: r.estado, color: '#6c757d' };
+
+    const marker = L.circleMarker([r.latitud, r.longitud], {
+      radius: 9,
+      fillColor: color,
+      color: '#fff',
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.85,
+    });
+
+    marker.bindPopup(`
+      <div class="popup-content">
+        <h4>${r.titulo}</h4>
+        <span class="popup-badge" style="background:${estado.color};color:#fff">
+          ${estado.label}
+        </span>
+        <div class="popup-meta">
+          📍 ${r.municipio}<br>
+          🗂 ${CATEGORIAS_LABEL[r.categoria] || r.categoria}
+        </div>
+      </div>
+    `);
+
+    marker.addTo(mapa);
+    markers.push(marker);
+  });
+
+  document.getElementById('contador-markers').textContent = reportes.length;
+}
+
+// ── Filtros ─────────────────────────────────────────────────
+function aplicarFiltros() {
+  const municipio = document.getElementById('filtro-municipio').value;
+  const estado    = document.getElementById('filtro-estado').value;
+  const categoria = document.getElementById('filtro-categoria').value;
+
+  const filtrados = todosLosReportes.filter(r => {
+    return (!municipio || r.municipio === municipio)
+        && (!estado    || r.estado    === estado)
+        && (!categoria || r.categoria === categoria);
+  });
+
+  renderMarkers(filtrados);
+}
+
+function resetFiltros() {
+  document.getElementById('filtro-municipio').value = '';
+  document.getElementById('filtro-estado').value    = '';
+  document.getElementById('filtro-categoria').value = '';
+  renderMarkers(todosLosReportes);
+}
+
+// Escuchar cambios en los tres selectores
+['filtro-municipio', 'filtro-estado', 'filtro-categoria'].forEach(id => {
+  document.getElementById(id).addEventListener('change', aplicarFiltros);
+});
+
+// ── Arrancar ────────────────────────────────────────────────
+cargarReportes();
+</script>
+{% endblock %}

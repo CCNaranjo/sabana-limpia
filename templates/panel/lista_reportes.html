@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block title %}Panel Operador{% endblock %}
+
+{% block extra_styles %}
+<style>
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.panel-header h1 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--verde);
+}
+.filtros-bar {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filtros-bar select {
+  padding: .45rem .75rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: .9rem;
+  background: var(--blanco);
+}
+.btn-filtrar {
+  padding: .45rem 1rem;
+  background: var(--verde);
+  color: var(--blanco);
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-limpiar {
+  padding: .45rem 1rem;
+  background: transparent;
+  color: var(--verde);
+  border: 1.5px solid var(--verde);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+table { width: 100%; border-collapse: collapse; background: var(--blanco); border-radius: var(--radio); overflow: hidden; box-shadow: var(--sombra); }
+thead { background: var(--verde); color: var(--blanco); }
+th, td { padding: .85rem 1rem; text-align: left; font-size: .9rem; }
+tbody tr:hover { background: #f0faf4; }
+tbody tr { border-bottom: 1px solid #e5e7eb; }
+.badge {
+  display: inline-block;
+  padding: .2rem .7rem;
+  border-radius: 12px;
+  font-size: .78rem;
+  font-weight: 600;
+}
+.badge-pendiente   { background: #e9ecef; color: #495057; }
+.badge-en_gestion  { background: #fff3cd; color: #856404; }
+.badge-resuelto    { background: #d8f3dc; color: #1b4332; }
+.badge-rechazado   { background: #fde8e8; color: #7f1d1d; }
+.btn-gestionar {
+  padding: .3rem .8rem;
+  background: var(--verde);
+  color: var(--blanco);
+  border-radius: 6px;
+  font-size: .82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.btn-gestionar:hover { background: var(--verde-claro); color: var(--verde); }
+.empty-state { text-align: center; padding: 3rem; color: var(--gris-suave); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="panel-header">
+  <h1>Panel — {{ request.user.municipio }}</h1>
+
+  <form method="get" class="filtros-bar">
+    <select name="estado">
+      <option value="">Todos los estados</option>
+      {% for val, label in estados %}
+        <option value="{{ val }}" {% if estado_actual == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <select name="categoria">
+      <option value="">Todas las categorías</option>
+      {% for val, label in categorias %}
+        <option value="{{ val }}" {% if categoria_actual == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn-filtrar">Filtrar</button>
+    <a href="{% url 'panel:lista' %}" class="btn-limpiar">Limpiar</a>
+  </form>
+</div>
+
+{% if reportes %}
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Título</th>
+      <th>Categoría</th>
+      <th>Ciudadano</th>
+      <th>Fecha</th>
+      <th>Estado</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in reportes %}
+    <tr>
+      <td>{{ r.id }}</td>
+      <td>{{ r.titulo }}</td>
+      <td>{{ r.get_categoria_display }}</td>
+      <td>{{ r.usuario.email }}</td>
+      <td>{{ r.created_at|date:"d/m/Y" }}</td>
+      <td><span class="badge badge-{{ r.estado }}">{{ r.get_estado_display }}</span></td>
+      <td><a href="{% url 'panel:detalle' r.pk %}" class="btn-gestionar">Gestionar</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+  <p>No hay reportes{% if estado_actual or categoria_actual %} con los filtros aplicados{% endif %} en {{ request.user.municipio }}.</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -16,6 +16,9 @@ urlpatterns = [
     
     # URLs de la app residuos (registro doméstico, estadísticas)
     path('residuos/', include('residuos.urls')),
+
+    # Panel operador
+    path('panel/', include('panel.urls')),
 ]
 
 # Servir archivos multimedia (imágenes) solo en modo desarrollo

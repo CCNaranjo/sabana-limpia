@@ -229,3 +229,44 @@ class MisRegistrosView(CiudadanoRequeridoMixin, View):
             'semana_actual': get_week_start(),
             'semana_label':  format_week_range(get_week_start()),
         })
+
+# ---------------------------------------------------------------------------
+# T-29 — Endpoint JSON para estadísticas
+# ---------------------------------------------------------------------------
+
+from django.http import JsonResponse
+from django.db.models import Sum
+
+
+class EstadisticasJsonView(View):
+    """
+    GET /api/residuos/estadisticas/
+    Devuelve totales de kg por municipio para Chart.js.
+    Sin autenticación — endpoint público.
+    """
+
+    def get(self, request):
+        datos = (
+            RegistroResiduo.objects
+            .values('municipio')
+            .annotate(
+                total_organico=Sum('organico_kg'),
+                total_reciclable=Sum('reciclable_kg'),
+                total_no_reciclable=Sum('no_reciclable_kg'),
+                total_especial=Sum('especial_kg'),
+                total_peligroso=Sum('peligroso_kg'),
+            )
+            .order_by('municipio')
+        )
+        return JsonResponse({'estadisticas': list(datos)})
+    
+# ---------------------------------------------------------------------------
+# T-30 — Página de estadísticas públicas
+# ---------------------------------------------------------------------------
+
+class EstadisticasView(View):
+    """Página pública de estadísticas. No requiere autenticación."""
+    template_name = 'residuos/estadisticas.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
