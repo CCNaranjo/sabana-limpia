@@ -1,0 +1,254 @@
+[
+  {
+    "model": "usuarios.insignia",
+    "pk": 1,
+    "fields": {
+      "slug": "arje_de_iniciar",
+      "nombre": "Arjé de Iniciar",
+      "descripcion": "Cruzas el umbral entre la indiferencia y la acción. Tu primer reporte abre un camino sin retorno.",
+      "emoji": "🌅",
+      "nivel": 0,
+      "condicion": {"tipo": "total_reportes", "umbral": 1},
+      "orden": 1,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 2,
+    "fields": {
+      "slug": "ojo_de_argos",
+      "nombre": "El Ojo de Argos",
+      "descripcion": "Con el primer ojo abierto, la vigilancia comienza. Viendo lo que otros no ven aún.",
+      "emoji": "👁️",
+      "nivel": 1,
+      "condicion": {"tipo": "total_reportes", "umbral": 5},
+      "orden": 2,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 3,
+    "fields": {
+      "slug": "argos_vigilante",
+      "nombre": "Argos Vigilante",
+      "descripcion": "Múltiples ojos despiertan en armonía. El usuario expande su alcance observacional, la visión se multiplica.",
+      "emoji": "👁️‍🗨️",
+      "nivel": 2,
+      "condicion": {"tipo": "total_reportes", "umbral": 15},
+      "orden": 3,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 4,
+    "fields": {
+      "slug": "panoptes",
+      "nombre": "Panoptes — El que todo lo ve",
+      "descripcion": "Con mil ojos vigilantes, nada permanece oculto. Tu observación es absoluta, tu conocimiento del territorio, completo e ineludible.",
+      "emoji": "🔮",
+      "nivel": 3,
+      "condicion": {"tipo": "total_reportes", "umbral": 30},
+      "orden": 4,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 5,
+    "fields": {
+      "slug": "gaia_terrigena",
+      "nombre": "Gaia Terrígena",
+      "descripcion": "La tierra misma reconoce tu primer paso. Al registrar residuos por primera vez, haces un pacto con la tierra madre.",
+      "emoji": "🌍",
+      "nivel": 0,
+      "condicion": {"tipo": "total_registros_residuos", "umbral": 1},
+      "orden": 5,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 6,
+    "fields": {
+      "slug": "semilla_de_gaia",
+      "nombre": "Semilla de Gaia",
+      "descripcion": "La primera semilla germina en la consciencia. Gaia siembra en ti el inicio del compromiso cíclico con la tierra.",
+      "emoji": "🌱",
+      "nivel": 1,
+      "condicion": {"tipo": "semanas_consecutivas", "umbral": 4},
+      "orden": 6,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 7,
+    "fields": {
+      "slug": "brote_de_gaia",
+      "nombre": "Brote de Gaia",
+      "descripcion": "El ciclo se consolida. Gaia ve germinar la planta del hábito, alimentada por constancia.",
+      "emoji": "🌿",
+      "nivel": 2,
+      "condicion": {"tipo": "semanas_consecutivas", "umbral": 12},
+      "orden": 7,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 8,
+    "fields": {
+      "slug": "gaia_perpetua",
+      "nombre": "Gaia Perpetua — La devoción eterna",
+      "descripcion": "Integrado en el corazón de la tierra. El hábito se vuelve naturaleza, tu sostenibilidad es inmutable.",
+      "emoji": "🌳",
+      "nivel": 3,
+      "condicion": {"tipo": "semanas_consecutivas", "umbral": 24},
+      "orden": 8,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 9,
+    "fields": {
+      "slug": "pupilo_de_los_lares",
+      "nombre": "Pupilo de los Lares",
+      "descripcion": "Los Lares, espíritus protectores del hogar y la comunidad, reconocen al aspirante.",
+      "emoji": "🏠",
+      "nivel": 1,
+      "condicion": {"tipo": "reportes_resueltos", "umbral": 3},
+      "orden": 9,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 10,
+    "fields": {
+      "slug": "guerrero_de_los_lares",
+      "nombre": "Guerrero de los Lares",
+      "descripcion": "El usuario asciende como defensor del espacio comunitario. Las resoluciones fluyen con un propósito.",
+      "emoji": "🛡️",
+      "nivel": 2,
+      "condicion": {"tipo": "reportes_resueltos", "umbral": 9},
+      "orden": 10,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 11,
+    "fields": {
+      "slug": "lar_familiaris",
+      "nombre": "Lar Familiaris — El protector eterno",
+      "descripcion": "Guardián sagrado del hogar colectivo. Te conviertes en un Lar encarnado, custodia definitiva de tu comunidad. Tu protección es perpetua, tu devoción, inquebrantable.",
+      "emoji": "⚔️",
+      "nivel": 3,
+      "condicion": {"tipo": "reportes_resueltos", "umbral": 18},
+      "orden": 11,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 12,
+    "fields": {
+      "slug": "portador_de_atlas",
+      "nombre": "Portador de Atlas",
+      "descripcion": "Atlas, el titán, coloca el primer mundo sobre tus hombros. Comienzas el conocimiento de múltiples dominios territoriales.",
+      "emoji": "🗺️",
+      "nivel": 1,
+      "condicion": {"tipo": "municipios_distintos", "umbral": 3},
+      "orden": 12,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 13,
+    "fields": {
+      "slug": "atlas_el_titan",
+      "nombre": "Atlas el Titán",
+      "descripcion": "Con tres mundos, asciendes a titán. Tu fortaleza sostiene múltiples territorios en perfecto equilibrio.",
+      "emoji": "🌐",
+      "nivel": 2,
+      "condicion": {"tipo": "municipios_distintos", "umbral": 7},
+      "orden": 13,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 14,
+    "fields": {
+      "slug": "telamon",
+      "nombre": "Telamon — El soporte del mundo",
+      "descripcion": "Cuya fuerza entreteje todos los mundos. Integras municipios en una visión territorial cohesiva e indivisible.",
+      "emoji": "🏔️",
+      "nivel": 3,
+      "condicion": {"tipo": "municipios_distintos", "umbral": 11},
+      "orden": 14,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 15,
+    "fields": {
+      "slug": "marinero_del_argo",
+      "nombre": "Marinero del Argo",
+      "descripcion": "Jasón te recluta. Comienzas a navegar las primeras aguas del conocimiento residual, iniciando travesías hacia lo desconocido.",
+      "emoji": "⛵",
+      "nivel": 1,
+      "condicion": {"tipo": "categorias_distintas", "umbral": 2},
+      "orden": 15,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 16,
+    "fields": {
+      "slug": "argonauta",
+      "nombre": "Argonauta",
+      "descripcion": "Con pruebas superadas, alcanzas el rango de Argonauta. Has navegado peligros y emerges victorioso de cada travesía residual.",
+      "emoji": "🚢",
+      "nivel": 2,
+      "condicion": {"tipo": "categorias_distintas", "umbral": 4},
+      "orden": 16,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 17,
+    "fields": {
+      "slug": "iason_chrysocheiros",
+      "nombre": "Iason Chrysocheiros — El conquistador dorado",
+      "descripcion": "Quien posee el vellón de todo conocimiento. Dominas la totalidad del ecosistema residual, maestro de todas las categorías.",
+      "emoji": "👑",
+      "nivel": 3,
+      "condicion": {"tipo": "categorias_distintas", "umbral": 8},
+      "orden": 17,
+      "visible": true
+    }
+  },
+  {
+    "model": "usuarios.insignia",
+    "pk": 18,
+    "fields": {
+      "slug": "apolo_phoebus",
+      "nombre": "Apolo Phoebus — El radiante que abre caminos",
+      "descripcion": "La luz del sol trae visibilidad a territorios oscuros. Eres como Apolo mismo, portador de la antorcha solar que revela y autoriza nuevos mundos. Tu primer reporte en municipio virgen es el génesis.",
+      "emoji": "☀️",
+      "nivel": 3,
+      "condicion": {"tipo": "primer_reporte_municipio_virgen"},
+      "orden": 18,
+      "visible": false
+    }
+  }
+]

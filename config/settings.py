@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'usuarios',      
+    'usuarios.apps.UsuariosConfig',      
     'reportes',      
     'residuos', 
     'panel',
@@ -79,6 +79,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'config.context_processors.tawk_settings',
             ],
         },
     },
@@ -193,3 +194,5 @@ LOGGING = {
         },
     },
 }
+TAWK_PROPERTY_ID = config('TAWK_PROPERTY_ID', default='')
+TAWK_WIDGET_ID   = config('TAWK_WIDGET_ID', default='default')

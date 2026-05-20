@@ -2,12 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>{% block title %}SabanaLimpia{% endblock %} — Sabana Centro</title>
 
   {% load static %}
 
-  <!-- Google Fonts: DM Serif Display + DM Sans -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -43,15 +43,18 @@
     a { color: var(--verde); text-decoration: none; }
     a:hover { text-decoration: underline; }
 
-    /* ── Navbar ─────────────────────────────────────────── */
+    /* ── Navbar base (flex) ───────────────────────────── */
     .navbar {
       background: var(--verde);
       padding: .9rem 1.5rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
       box-shadow: 0 2px 12px rgba(0,0,0,.15);
+      position: relative;
     }
+
     .navbar__logo {
       font-family: var(--font-display);
       font-size: 1.4rem;
@@ -59,14 +62,37 @@
       letter-spacing: -.01em;
     }
     .navbar__logo span { color: var(--verde-claro); }
-    .navbar__links { display: flex; gap: 1.2rem; align-items: center; }
+
+    /* Botón hamburguesa (solo visible en móvil) */
+    .navbar__toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: var(--blanco);
+      padding: 0.2rem 0.5rem;
+      line-height: 1;
+    }
+
+    /* Contenedor de enlaces (escritorio: flex, móvil: colapsable) */
+    .navbar__links {
+      display: flex;
+      gap: 1.2rem;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
     .navbar__links a {
       color: rgba(255,255,255,.85);
       font-size: .9rem;
       font-weight: 500;
       transition: color .2s;
     }
-    .navbar__links a:hover { color: var(--blanco); text-decoration: none; }
+    .navbar__links a:hover {
+      color: var(--blanco);
+      text-decoration: none;
+    }
     .navbar__links .btn-nav {
       background: var(--verde-claro);
       color: var(--verde) !important;
@@ -76,38 +102,11 @@
     }
     .navbar__links .btn-nav:hover { background: #74c69d; }
 
-    /* ── Mensajes flash ─────────────────────────────────── */
-    .messages { list-style: none; padding: .8rem 1.5rem; }
-    .messages li {
-      padding: .75rem 1rem;
-      border-radius: 8px;
-      margin-bottom: .5rem;
-      font-size: .9rem;
-      font-weight: 500;
-    }
-    .messages .success { background: #d8f3dc; color: #1b4332; border-left: 4px solid var(--verde-claro); }
-    .messages .error   { background: #fde8e8; color: #7f1d1d; border-left: 4px solid #f87171; }
-    .messages .info    { background: #dbeafe; color: #1e3a8a; border-left: 4px solid #60a5fa; }
-    .messages .warning { background: #fef3c7; color: #92400e; border-left: 4px solid #fbbf24; }
-
-    /* ── Contenido principal ────────────────────────────── */
-    .main { flex: 1; }
-
-    /* ── Footer ─────────────────────────────────────────── */
-    footer {
-      text-align: center;
-      padding: 1.2rem;
-      font-size: .8rem;
-      color: var(--gris-suave);
-      border-top: 1px solid #d4edda;
-    }
-
-      /* Dropdown menu para navegación con roles */
+    /* Dropdowns (submenús) */
     .nav-dropdown {
       position: relative;
       display: inline-block;
     }
-    
     .nav-dropdown-toggle {
       cursor: pointer;
       color: rgba(255,255,255,.85);
@@ -115,11 +114,7 @@
       font-weight: 500;
       padding: 0.4rem 0;
     }
-    
-    .nav-dropdown-toggle:hover {
-      color: white;
-    }
-    
+    .nav-dropdown-toggle:hover { color: white; }
     .nav-dropdown-menu {
       display: none;
       position: absolute;
@@ -133,29 +128,25 @@
       box-shadow: var(--sombra);
       z-index: 1000;
     }
-    
     .nav-dropdown:hover .nav-dropdown-menu {
       display: block;
     }
-    
     .nav-dropdown-menu a {
       display: block;
       padding: 0.5rem 1rem;
       color: rgba(255,255,255,.85) !important;
       font-size: 0.85rem;
     }
-    
     .nav-dropdown-menu a:hover {
       background: var(--verde-claro);
       color: white !important;
     }
-    
+
     .nav-user {
       color: var(--verde-claro);
       font-weight: 500;
       margin-left: 0.5rem;
     }
-    
     .nav-highlight {
       background: var(--verde-claro);
       color: var(--verde) !important;
@@ -163,93 +154,351 @@
       border-radius: 6px;
       font-weight: 600;
     }
-    
-    .nav-highlight:hover {
-      background: #74c69d;
+    .nav-highlight:hover { background: #74c69d; }
+
+    /* ── Responsive: pantallas pequeñas ───────────────── */
+    @media (max-width: 768px) {
+      .navbar__toggle {
+        display: block;
+      }
+
+      .navbar__links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        gap: 0.8rem;
+        margin-top: 1rem;
+        align-items: flex-start;
+        background: var(--verde);
+        padding: 1rem 0 1.5rem;
+      }
+
+      .navbar__links.open {
+        display: flex;
+      }
+
+      .nav-dropdown {
+        width: 100%;
+      }
+
+      .nav-dropdown-menu {
+        position: static;
+        box-shadow: none;
+        background: #1f5a3f;
+        margin-top: 0.3rem;
+        width: 100%;
+        display: none; /* oculto por defecto, se abre con JS */
+      }
+
+      .nav-dropdown-menu a {
+        padding-left: 1.5rem;
+      }
+
+      .navbar__links a,
+      .navbar__links .nav-dropdown-toggle,
+      .navbar__links .btn-nav,
+      .navbar__links .nav-highlight,
+      .navbar__links .nav-user {
+        width: 100%;
+        padding: 0.4rem 0.5rem;
+      }
+
+      .nav-user {
+        margin-left: 0;
+        border-top: 1px solid rgba(255,255,255,0.2);
+        margin-top: 0.5rem;
+        padding-top: 0.8rem;
+      }
+    }
+
+    /* ── Mensajes flash y footer ───────────────────────── */
+    .messages { list-style: none; padding: .8rem 1.5rem; }
+    .messages li {
+      padding: .75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: .5rem;
+      font-size: .9rem;
+      font-weight: 500;
+    }
+    .messages .success { background: #d8f3dc; color: #1b4332; border-left: 4px solid var(--verde-claro); }
+    .messages .error   { background: #fde8e8; color: #7f1d1d; border-left: 4px solid #f87171; }
+    .messages .info    { background: #dbeafe; color: #1e3a8a; border-left: 4px solid #60a5fa; }
+    .messages .warning { background: #fef3c7; color: #92400e; border-left: 4px solid #fbbf24; }
+
+    .main { flex: 1; }
+
+    footer {
+      text-align: center;
+      padding: 1.2rem;
+      font-size: .8rem;
+      color: var(--gris-suave);
+      border-top: 1px solid #d4edda;
     }
   </style>
-  <!-- Leaflet.js -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+  <!-- Leaflet.js (si se necesita en páginas concretas) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  
+
   {% block extra_styles %}{% endblock %}
 </head>
+
+<!-- Tawk.to Live Chat Widget -->
+{% if TAWK_PROPERTY_ID %}
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API = Tawk_API || {};
+var Tawk_LoadStart = new Date();
+
+{% if user.is_authenticated %}
+Tawk_API.onLoad = function() {
+    Tawk_API.setAttributes({
+        'name':      '{{ user.get_full_name|default:user.username }}',
+        'email':     '{{ user.email }}',
+        'municipio': '{{ user.municipio }}',
+        'rol':       '{{ user.rol }}'
+    }, function(error) {});
+};
+{% endif %}
+
+(function(){
+    var s1 = document.createElement("script");
+    var s0 = document.getElementsByTagName("script")[0];
+    s1.async = true;
+    s1.src   = 'https://embed.tawk.to/{{ TAWK_PROPERTY_ID }}/{{ TAWK_WIDGET_ID }}';
+    s1.charset = 'UTF-8';
+    s1.setAttribute('crossorigin', '*');
+    s0.parentNode.insertBefore(s1, s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+{% endif %}
+
+<!-- ══ Toast de insignias ══════════════════════════════════════ -->
+{% if user.is_authenticated %}
+<div id="toast-container" style="
+  position: fixed; bottom: 90px; right: 20px;
+  z-index: 9999; display: flex; flex-direction: column; gap: .75rem;
+"></div>
+
+<style>
+.insignia-toast {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 8px 30px rgba(0,0,0,.18);
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  max-width: 320px;
+  animation: slideIn .4s ease;
+  border-left: 5px solid #1A5C2A;
+}
+
+.insignia-toast.nivel-1 { border-color: #CD7F32; }
+.insignia-toast.nivel-2 { border-color: #C0C0C0; }
+.insignia-toast.nivel-3 { border-color: #FFD700; }
+.insignia-toast.pionero { border-color: #9b59b6;
+  box-shadow: 0 8px 30px rgba(155,89,182,.35); }
+
+.toast-emoji  { font-size: 2.2rem; flex-shrink: 0; }
+.toast-body   { flex: 1; }
+.toast-titulo { font-weight: 700; font-size: .95rem; color: #222; }
+.toast-header { font-size: .75rem; color: #888; margin-bottom: .15rem; }
+.toast-desc   { font-size: .8rem; color: #555; margin-top: .2rem; line-height: 1.35; }
+.toast-cerrar {
+  background: none; border: none; cursor: pointer;
+  font-size: 1.1rem; color: #aaa; padding: 0; flex-shrink: 0;
+}
+.toast-cerrar:hover { color: #333; }
+
+@keyframes slideIn {
+  from { transform: translateX(120%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(60px); }
+}
+</style>
+
+<script>
+(function() {
+  // Solo ejecutar si el usuario está logueado (ya controlado por el bloque Django)
+  function mostrarToast(insignia) {
+    const container = document.getElementById('toast-container');
+    const div = document.createElement('div');
+
+    const nivelClass = insignia.slug === 'apolo_phoebus'
+      ? 'pionero'
+      : `nivel-${insignia.nivel}`;
+
+    div.className = `insignia-toast ${nivelClass}`;
+    div.innerHTML = `
+      <span class="toast-emoji">${insignia.emoji}</span>
+      <div class="toast-body">
+        <div class="toast-header">🏅 ¡Logro desbloqueado!</div>
+        <div class="toast-titulo">${insignia.nombre}</div>
+        <div class="toast-desc">${insignia.descripcion}</div>
+      </div>
+      <button class="toast-cerrar" onclick="this.closest('.insignia-toast').remove()">✕</button>
+    `;
+
+    container.appendChild(div);
+
+    // Desaparecer automáticamente después de 6 segundos
+    setTimeout(() => {
+      div.style.animation = 'fadeOut .5s ease forwards';
+      setTimeout(() => div.remove(), 500);
+    }, 6000);
+  }
+
+  // Al cargar la página, verificar si hay insignias pendientes
+  fetch("{% url 'usuarios:insignias_pendientes' %}")
+    .then(r => r.json())
+    .then(data => {
+      // Mostrar cada toast con un pequeño delay entre ellos
+      data.insignias.forEach((insignia, i) => {
+        setTimeout(() => mostrarToast(insignia), i * 1200);
+      });
+    })
+    .catch(() => {}); // silenciar errores de red
+})();
+</script>
+{% endif %}
+
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <a href="/" class="navbar__logo">Sabana<span>Limpia</span></a>
-    <div class="navbar__links">
-      
-      <!-- Enlaces públicos (todos ven esto) -->
-      <a href="/reportes/mapa/">Mapa de reportes</a>
-      <a href="/residuos/estadisticas/">Estadísticas</a>
-      
-      {% if user.is_authenticated %}
-        
-        <!-- ============================================ -->
-        <!-- CIUDADANO: acciones principales              -->
-        <!-- ============================================ -->
-        {% if user.rol == 'ciudadano' %}
-          <div class="nav-dropdown">
-            <span class="nav-dropdown-toggle">Reportes ▼</span>
-            <div class="nav-dropdown-menu">
-              <a href="/reportes/nuevo/">Nuevo reporte</a>
-              <a href="/reportes/mis-reportes/">Mis reportes</a>
-            </div>
+<nav class="navbar">
+  <a href="/" class="navbar__logo">Sabana<span>Limpia</span></a>
+
+  <!-- Botón hamburguesa para móvil -->
+  <button class="navbar__toggle" id="navbarToggle" aria-label="Menú de navegación">☰</button>
+
+  <div class="navbar__links" id="navbarLinks">
+    <!-- Enlaces públicos -->
+    <a href="/reportes/mapa/">Mapa de reportes</a>
+    <a href="/residuos/estadisticas/">Estadísticas</a>
+
+    {% if user.is_authenticated %}
+      {% if user.rol == 'ciudadano' %}
+        <!-- Dropdown Reportes -->
+        <div class="nav-dropdown">
+          <span class="nav-dropdown-toggle">Reportes ▼</span>
+          <div class="nav-dropdown-menu">
+            <a href="/reportes/nuevo/">Nuevo reporte</a>
+            <a href="/reportes/mis-reportes/">Mis reportes</a>
           </div>
-          
-          <div class="nav-dropdown">
-            <span class="nav-dropdown-toggle">Residuos ▼</span>
-            <div class="nav-dropdown-menu">
-              <a href="/residuos/nuevo/">Registrar esta semana</a>
-              <a href="/residuos/mis-registros/">Mis registros</a>
-            </div>
+        </div>
+        <!-- Dropdown Residuos -->
+        <div class="nav-dropdown">
+          <span class="nav-dropdown-toggle">Residuos ▼</span>
+          <div class="nav-dropdown-menu">
+            <a href="/residuos/nuevo/">Registrar esta semana</a>
+            <a href="/residuos/mis-registros/">Mis registros</a>
           </div>
-        
-        <!-- ============================================ -->
-        <!-- OPERADOR: gestión de reportes                -->
-        <!-- ============================================ -->
-        {% elif user.rol == 'operador' %}
-          <a href="/panel/" class="nav-highlight">Panel de gestión</a>
-        {% endif %}
-        
-        <!-- Usuario info + logout (común a todos) -->
-        <span class="nav-user">{{ user.username }}</span>
-        <a href="{% url 'usuarios:logout' %}"
-          onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-          Cerrar sesión
-        </a>
-        <form id="logout-form" action="{% url 'usuarios:logout' %}" method="post" hidden>
-          {% csrf_token %}
-        </form>
-        
-      {% else %}
-        <!-- Usuario no autenticado -->
-        <a href="{% url 'usuarios:login' %}">Iniciar sesión</a>
-        <a href="{% url 'usuarios:registro' %}" class="btn-nav">Regístrate</a>
+        </div>
+        <!-- Enlace a "Mi impacto" (dashboard) -->
+        <a href="{% url 'usuarios:mi_impacto' %}">Mi impacto</a>
+
+      {% elif user.rol == 'operador' %}
+        <a href="/panel/" class="nav-highlight">Panel de gestión</a>
       {% endif %}
-    </div>
-  </nav>
 
-  <!-- Mensajes flash (success, error, info, warning) -->
-  {% if messages %}
-    <ul class="messages">
-      {% for message in messages %}
-        <li class="{{ message.tags }}">{{ message }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
+      <!-- Usuario y logout -->
+      <span class="nav-user">{{ user.username }}</span>
+      <a href="{% url 'usuarios:logout' %}"
+         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+        Cerrar sesión
+      </a>
+      <form id="logout-form" action="{% url 'usuarios:logout' %}" method="post" hidden>
+        {% csrf_token %}
+      </form>
 
-  <!-- Contenido de cada página -->
-  <main class="main">
-    {% block content %}{% endblock %}
-  </main>
+    {% else %}
+      <a href="{% url 'usuarios:login' %}">Iniciar sesión</a>
+      <a href="{% url 'usuarios:registro' %}" class="btn-nav">Regístrate</a>
+    {% endif %}
+  </div>
+</nav>
 
-  <footer>
-    © {% now "Y" %} SabanaLimpia — Sabana Centro, Cundinamarca
-  </footer>
+<!-- Mensajes flash -->
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
 
-  {% block extra_scripts %}{% endblock %}
+<main class="main">
+  {% block content %}{% endblock %}
+</main>
+
+<footer>
+  © {% now "Y" %} SabanaLimpia — Sabana Centro, Cundinamarca
+</footer>
+
+<!-- JavaScript para el toggle del menú móvil y dropdowns -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('navbarToggle');
+    const navLinks = document.getElementById('navbarLinks');
+
+    function closeMenu() {
+      if (window.innerWidth <= 768 && navLinks.classList.contains('open')) {
+        navLinks.classList.remove('open');
+      }
+    }
+
+    // Abrir/cerrar menú hamburguesa
+    if (toggleBtn && navLinks) {
+      toggleBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navLinks.classList.toggle('open');
+      });
+    }
+
+    // Manejo de dropdowns en móvil (no cierran el menú principal)
+    const dropdownToggles = document.querySelectorAll('.nav-dropdown-toggle');
+    dropdownToggles.forEach(toggle => {
+      toggle.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+          e.preventDefault();
+          e.stopPropagation();
+          const parent = this.closest('.nav-dropdown');
+          const submenu = parent.querySelector('.nav-dropdown-menu');
+          // Cerrar otros submenús abiertos
+          document.querySelectorAll('.nav-dropdown-menu').forEach(menu => {
+            if (menu !== submenu) menu.style.display = 'none';
+          });
+          // Toggle el submenú actual
+          if (submenu.style.display === 'block') {
+            submenu.style.display = 'none';
+          } else {
+            submenu.style.display = 'block';
+          }
+        }
+      });
+    });
+
+    // Cerrar menú principal al hacer clic en un enlace real (no en los toggles)
+    const realLinks = navLinks.querySelectorAll('a:not(.nav-dropdown-toggle)');
+    realLinks.forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    // Cerrar menú si se hace clic fuera del navbar
+    document.addEventListener('click', function(e) {
+      if (window.innerWidth <= 768 && navLinks && navLinks.classList.contains('open')) {
+        if (!navLinks.contains(e.target) && e.target !== toggleBtn) {
+          closeMenu();
+        }
+      }
+    });
+  });
+</script>
+
+{% block extra_scripts %}{% endblock %}
 </body>
 </html>

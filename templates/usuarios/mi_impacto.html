@@ -1,0 +1,529 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Impacto — SabanaLimpia{% endblock %}
+
+{% block extra_styles %}
+<style>
+/* ── Dashboard Mi Impacto ────────────────────────────────── */
+:root {
+  /* Sobre los tokens existentes, agregar escala semántica */
+  --color-exito:    #27ae60;   /* Resueltos, positivo        */
+  --color-alerta:   #f39c12;   /* En gestión, advertencia    */
+  --color-neutro:   #7f8c8d;   /* Pendiente, neutral         */
+  --color-primario: #2d6a4f;   /* Valores principales        */
+  --color-dato:     #1b4332;   /* Números grandes de impacto */
+}
+
+/* Aplicación en tarjetas de métricas */
+.metrica-card[data-tipo="resueltos"] .metrica-valor { color: var(--color-exito); }
+.metrica-card[data-tipo="pendientes"] .metrica-valor { color: var(--color-alerta); }
+.metrica-card[data-tipo="gestion"] .metrica-valor   { color: #3b82f6; }
+.metrica-card[data-tipo="total"] .metrica-valor     { color: var(--color-dato); }
+
+/* Reemplaza las secciones h2 simples */
+.seccion-bloque {
+  background: var(--blanco);
+  border: 1px solid #e4ede6;
+  border-radius: 16px;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 2px 10px rgba(45, 106, 79, 0.06);
+}
+
+.seccion-bloque + .seccion-bloque {
+  margin-top: 1.5rem;      /* Espacio explícito entre secciones */
+}
+
+.seccion-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: #1b2a1e;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--verde-palido);  /* Línea divisora sutil */
+}
+
+.impacto-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.impacto-header h1 { color: #1A5C2A; font-size: 1.8rem; }
+.subtitulo         { color: #555; margin-top: .25rem; }
+
+.frase-impacto {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  background: #D6ECD9;
+  border-left: 4px solid #1A5C2A;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+}
+
+/* Tarjetas de métricas */
+.metricas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.metrica-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.metrica-icono { font-size: 2rem; margin-bottom: .5rem; }
+.metrica-valor { font-size: 2.2rem; font-weight: 700; color: #1A5C2A; }
+.metrica-label { font-size: .9rem; color: #666; margin-top: .25rem; }
+.metrica-sub   { font-size: .8rem; color: #888; margin-top: .25rem; }
+
+.metrica-tendencia { font-size: .8rem; margin-top: .4rem; font-weight: 600; }
+.metrica-tendencia.positiva { color: #27ae60; }
+.metrica-tendencia.negativa { color: #e74c3c; }
+
+.residuo-barra-wrap {
+  margin-top: 0.75rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.residuo-barra-fila {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--gris-suave);
+}
+
+.residuo-barra-label { width: 60px; text-align: right; flex-shrink: 0; }
+
+.residuo-barra-track {
+  flex: 1;
+  height: 6px;
+  background: #e8f4e9;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.residuo-barra-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+/* Colores por tipo de residuo */
+.fill--organico      { background: #52b788; }
+.fill--reciclable    { background: #3b82f6; }
+.fill--no-reciclable { background: #95a5a6; }
+.fill--especial      { background: #f39c12; }
+.fill--peligroso     { background: #e74c3c; }
+
+.residuos-detalle { font-size: .78rem; color: #666; margin-top: .3rem; }
+
+/* Sección de insignias */
+/* Agregar encabezado de nivel entre grupos */
+.insignias-nivel-titulo {
+  grid-column: 1 / -1;           /* Ocupa todo el ancho del grid */
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gris-suave);
+  padding: 0.5rem 0 0.25rem;
+  border-bottom: 1px solid #eee;
+  margin-top: 0.5rem;
+}
+
+.insignias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.insignia-card {
+  border-radius: 12px;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  transition: transform .2s;
+}
+
+.insignia-card:hover { transform: translateY(-4px); }
+
+.insignia-emoji { font-size: 2.2rem; margin-bottom: .5rem; }
+.insignia-nombre { font-weight: 700; font-size: .9rem; }
+.insignia-desc   { font-size: .75rem; color: #555; margin-top: .35rem; line-height: 1.35; }
+.insignia-fecha  { font-size: .7rem; color: #999; margin-top: .5rem; }
+
+/* Niveles de insignia */
+.badge-nivel-1 { background: #FFF8F0; border-color: #CD7F32; } /* Bronce */
+.badge-nivel-2 { background: #F8F8F8; border-color: #C0C0C0; } /* Plata  */
+.badge-nivel-3 { background: #FFFBE6; border-color: #FFD700; } /* Oro    */
+.badge-pionero { background: #F5EEFF; border-color: #9b59b6;
+                 box-shadow: 0 0 16px rgba(155,89,182,.35); } /* Púrpura */
+
+.sin-insignias {
+  background: #f9f9f9;
+  border: 1px dashed #ccc;
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+  color: #888;
+}
+
+/* Misterio */
+.misterio-section {
+  background: linear-gradient(135deg, #1A3A5C 0%, #2D8A45 100%);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  color: #fff;
+}
+
+.misterio-section h2 { color: #fff; }
+
+/* Sobrescribir el estilo del texto en el gradiente oscuro */
+.misterio-section .pista-item {
+  color: rgba(255, 255, 255, 0.95);   /* era 0.9, queda más legible */
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.misterio-section .misterio-intro {
+  color: rgba(255, 255, 255, 0.82);   /* era 0.8, leve mejora */
+  margin-bottom: 0.5rem;
+}
+
+/* Añadir icono de rayo con accesibilidad */
+.pista-item::before {
+  content: '⚡ ';
+  speak: none;           /* accesibilidad: el lector ignora el emoji */
+}
+
+.pistas-lista { list-style: none; padding: 0; margin-top: 1rem; }
+
+/* Contribución global */
+.contribucion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.contrib-item {
+  background: #EEF7EE;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.contrib-valor { display: block; font-size: 1.8rem; font-weight: 700; color: #1A5C2A; }
+.contrib-label { display: block; font-size: .85rem; color: #555; margin-top: .25rem; }
+.pct-contribucion { margin-top: 1rem; font-size: .95rem; color: #444; text-align: center; }
+
+/* Navegación rápida */
+.nav-rapida { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn-nav {
+  padding: .65rem 1.25rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 1.5px solid #1A5C2A;
+  color: #1A5C2A;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background .2s, color .2s;
+}
+
+.btn-nav:hover,
+.btn-nav.btn-primario {
+  background: #1A5C2A;
+  color: #fff;
+}
+
+/* Ajustes adicionales para móvil */
+@media (max-width: 480px) {
+
+  /* Evitar que el grid de métricas fuerce 1 columna */
+  .metricas-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .metrica-valor { font-size: 1.6rem; }
+  .metrica-icono { font-size: 1.5rem; }
+
+  /* Sección misterio — asegurar contraste */
+  .misterio-section {
+    padding: 1.25rem 1.25rem;
+  }
+
+  /* Mapa personal — altura menor en móvil */
+  #mapa-personal {
+    height: 260px !important;
+  }
+
+  /* Insignias en 2 columnas en móvil */
+  .insignias-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .insignia-card {
+    padding: 1rem 0.75rem;
+  }
+
+  /* Navegación rápida — botones full width */
+  .nav-rapida {
+    flex-direction: column;
+  }
+
+  .btn-nav {
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+/* Tablet: 481px - 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .metricas-grid        { grid-template-columns: repeat(2, 1fr); }
+  .insignias-grid       { grid-template-columns: repeat(3, 1fr); }
+  .contribucion-grid    { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="impacto-container">
+
+  <!-- ══ ENCABEZADO ══════════════════════════════════════════ -->
+  <section class="seccion-bloque impacto-header">
+    <h1>🌿 Mi impacto en Sabana Centro</h1>
+    <p class="subtitulo">Cada acción cuenta. Esto es lo que has logrado.</p>
+    {% if frase_impacto %}
+      <div class="frase-impacto">
+        <span class="icono-frase">✨</span>
+        <p>{{ frase_impacto }}</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <!-- ══ TARJETAS DE MÉTRICAS ════════════════════════════════ -->
+  <section class="seccion-bloque metricas-grid">
+
+    <div class="metrica-card" data-tipo="total">
+      <span class="metrica-icono">🗺️</span>
+      <span class="metrica-valor">{{ total_reportes }}</span>
+      <span class="metrica-label">Reportes enviados</span>
+      {% if tendencia_pct is not None %}
+        <span class="metrica-tendencia {% if tendencia_pct >= 0 %}positiva{% else %}negativa{% endif %}">
+          {% if tendencia_pct >= 0 %}▲{% else %}▼{% endif %}
+          {{ tendencia_pct }}% vs mes anterior
+        </span>
+      {% endif %}
+    </div>
+
+    <div class="metrica-card" data-tipo="resueltos">
+      <span class="metrica-icono">✅</span>
+      <span class="metrica-valor">{{ reportes_resueltos }}</span>
+      <span class="metrica-label">Reportes resueltos</span>
+      {% if reportes_resueltos > 0 %}
+        <span class="metrica-sub">Gracias a tu reporte</span>
+      {% endif %}
+    </div>
+
+    <div class="metrica-card" data-tipo="gestion">
+      <span class="metrica-icono">🌿</span>
+      <span class="metrica-valor">{{ total_kg }} kg</span>
+      <span class="metrica-label">Residuos registrados</span>
+      <div class="residuos-detalle">
+        <span>Org: {{ totales_residuos.organico|default:0 }} kg</span>
+        <span>Rec: {{ totales_residuos.reciclable|default:0 }} kg</span>
+      </div>
+    </div>
+
+    <div class="metrica-card" data-tipo="pendientes">
+      <span class="metrica-icono">🏘️</span>
+      <span class="metrica-valor">{{ municipios_reportados|length }}</span>
+      <span class="metrica-label">Municipios reportados</span>
+      <span class="metrica-sub">{{ municipios_reportados|join:", " }}</span>
+    </div>
+
+  </section>
+
+  <!-- ══ MAPA PERSONAL ════════════════════════════════════════ -->
+  <section class="seccion-bloque mapa-section">
+    <h2 class="seccion-titulo">Mis puntos en el mapa</h2>
+    <div id="mapa-personal" style="height: 380px; border-radius: 12px;"></div>
+  </section>
+
+  <!-- ══ INSIGNIAS ════════════════════════════════════════════ -->
+  <section class="seccion-bloque insignias-section">
+    <h2 class="seccion-titulo">Mis insignias</h2>
+    {% if insignias_obtenidas %}
+      <div class="insignias-grid">
+        {% for grupo in insignias_por_nivel %}
+          <div class="insignias-nivel-titulo">{{ grupo.nivel_label }}</div>
+          {% for logro in grupo.logros %}
+            <div class="insignia-card badge-nivel-{{ logro.insignia.nivel }}">
+              <span class="insignia-emoji">{{ logro.insignia.emoji }}</span>
+              <span class="insignia-nombre">{{ logro.insignia.nombre }}</span>
+              <span class="insignia-desc">{{ logro.insignia.descripcion }}</span>
+              <span class="insignia-fecha">{{ logro.fecha_obtencion|date:"d M Y" }}</span>
+            </div>
+          {% endfor %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="sin-insignias">
+        Tus logros aparecerán aquí. Comienza reportando un punto crítico en tu municipio.
+      </p>
+    {% endif %}
+  </section>
+
+  <!-- ══ MISTERIO: PRÓXIMOS HITOS ═════════════════════════════ -->
+  {% if pistas %}
+  <section class="seccion-bloque misterio-section">
+    <h2 class="seccion-titulo">Próximos hitos</h2>
+    <p class="misterio-intro">El universo de Sabana Centro guarda secretos para quienes persisten…</p>
+    <ul class="pistas-lista">
+      {% for pista in pistas %}
+        <li class="pista-item">⚡ {{ pista }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  <!-- ══ CONTRIBUCIÓN GLOBAL ══════════════════════════════════ -->
+  <section class="seccion-bloque contribucion-section">
+    <h2 class="seccion-titulo">Tu lugar en Sabana Centro</h2>
+    <div class="contribucion-grid">
+      <div class="contrib-item">
+        <span class="contrib-valor">{{ total_global_reportes }}</span>
+        <span class="contrib-label">Reportes totales en la región</span>
+      </div>
+      <div class="contrib-item">
+        <span class="contrib-valor">{{ total_global_resueltos }}</span>
+        <span class="contrib-label">Resueltos por la comunidad</span>
+      </div>
+      <div class="contrib-item">
+        <span class="contrib-valor">{{ total_global_kg }} kg</span>
+        <span class="contrib-label">Residuos registrados en total</span>
+      </div>
+    </div>
+    {% if total_kg > 0 %}
+      <div class="residuo-barra-wrap">
+        {% with max_val=total_kg %}
+        <div class="residuo-barra-fila">
+          <span class="residuo-barra-label">Org.</span>
+          <div class="residuo-barra-track">
+            <div class="residuo-barra-fill fill--organico"
+                style="width: {% widthratio totales_residuos.organico|default:0 max_val 100 %}%"></div>
+          </div>
+          <span>{{ totales_residuos.organico|default:0 }} kg</span>
+        </div>
+        <div class="residuo-barra-fila">
+          <span class="residuo-barra-label">Recic.</span>
+          <div class="residuo-barra-track">
+            <div class="residuo-barra-fill fill--reciclable"
+                style="width: {% widthratio totales_residuos.reciclable|default:0 max_val 100 %}%"></div>
+          </div>
+          <span>{{ totales_residuos.reciclable|default:0 }} kg</span>
+        </div>
+        {% endwith %}
+      </div>
+      {% endif %}
+    {% if pct_contribucion > 0 %}
+      <p class="pct-contribucion">
+        Tus reportes representan el <strong>{{ pct_contribucion }}%</strong>
+        del total de la región.
+      </p>
+    {% endif %}
+
+  </section>
+
+  <!-- ══ NAVEGACIÓN RÁPIDA ═════════════════════════════════════ -->
+  <section class="seccion-bloque nav-rapida">
+    <a href="{% url 'reportes:mis_reportes' %}" class="btn-nav">Mis reportes</a>
+    <a href="{% url 'residuos:mis_registros' %}" class="btn-nav">Mis registros</a>
+    <a href="{% url 'reportes:nuevo_reporte' %}" class="btn-nav btn-primario">+ Nuevo reporte</a>
+  </section>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// ── Mapa personal ──────────────────────────────────────────────
+const mapa = L.map('mapa-personal').setView([4.96, -74.04], 11);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors'
+}).addTo(mapa);
+
+const COLORES_ESTADO = {
+  pendiente:   '#95a5a6',
+  en_gestion:  '#f39c12',
+  resuelto:    '#27ae60',
+  rechazado:   '#e74c3c',
+};
+
+// Cargar puntos del usuario logueado via JSON endpoint
+fetch("{% url 'reportes:mapa_personal_json' %}")
+  .then(r => r.json())
+  .then(data => {
+    if (data.puntos.length === 0) {
+      document.getElementById('mapa-personal').innerHTML =
+        '<p style="text-align:center;padding:2rem;">Aún no tienes reportes en el mapa.</p>';
+      return;
+    }
+
+    const bounds = [];
+    data.puntos.forEach(p => {
+      const color = COLORES_ESTADO[p.estado] || '#95a5a6';
+      const marker = L.circleMarker([p.latitud, p.longitud], {
+        radius:      8,
+        color:       color,
+        fillColor:   color,
+        fillOpacity: 0.85,
+        weight:      2,
+      }).addTo(mapa);
+
+      marker.bindPopup(`
+        <strong>${p.titulo}</strong><br>
+        <em>${p.categoria.replace('_', ' ')}</em><br>
+        Estado: <strong>${p.estado.replace('_', ' ')}</strong><br>
+        ${p.municipio}
+      `);
+
+      bounds.push([p.latitud, p.longitud]);
+    });
+
+    if (bounds.length > 0) mapa.fitBounds(bounds, { padding: [30, 30] });
+  })
+  .catch(() => {
+    console.warn('No se pudieron cargar los puntos del mapa personal.');
+  });
+</script>
+{% endblock %}

@@ -25,4 +25,5 @@ urlpatterns = [
         views.ConfirmacionView.as_view(),
         name="confirmacion",
     ),
+    path('api/mis-puntos/', views.mapa_personal_json, name='mapa_personal_json'),
 ]

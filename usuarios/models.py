@@ -113,3 +113,60 @@ class CustomUser(AbstractUser):
         verbose_name = 'Usuario'
         verbose_name_plural = 'Usuarios'
         ordering = ['-date_joined']  # Más recientes primero en el admin
+
+class Insignia(models.Model):
+    """
+    Catálogo completo de insignias disponibles en el sistema.
+    Las condiciones se almacenan como JSON para flexibilidad.
+    """
+
+    NIVEL_CHOICES = [
+        (0, 'Especial'),   # Pionero y Primera vez (sin jerarquía de nivel)
+        (1, 'Bronce'),
+        (2, 'Plata'),
+        (3, 'Oro'),
+    ]
+
+    slug        = models.SlugField(max_length=80, unique=True)
+    nombre      = models.CharField(max_length=150)   # Nombre épico en la app
+    descripcion = models.TextField()                  # Texto del logro
+    emoji       = models.CharField(max_length=10)
+    nivel       = models.IntegerField(choices=NIVEL_CHOICES, default=1)
+    condicion   = models.JSONField()
+    # Estructura de condicion:
+    # {
+    #   "tipo": "total_reportes" | "reportes_resueltos" |
+    #           "semanas_consecutivas" | "municipios_distintos" |
+    #           "categorias_distintas" | "primer_reporte_municipio_virgen",
+    #   "umbral": <int>   (no requerido para tipo "primer_reporte_municipio_virgen")
+    # }
+    orden       = models.PositiveIntegerField(default=0)
+    visible     = models.BooleanField(default=True)
+    # Si False, no aparece en la galería hasta que el usuario la obtiene
+
+    class Meta:
+        ordering = ['-nivel', 'orden']
+
+    def __str__(self):
+        return f'{self.nombre} (Nivel {self.nivel})'
+
+
+class LogroUsuario(models.Model):
+    """Registro de qué insignia obtuvo qué usuario y cuándo."""
+
+    usuario          = models.ForeignKey(
+        'CustomUser', on_delete=models.CASCADE, related_name='logros'
+    )
+    insignia         = models.ForeignKey(
+        Insignia, on_delete=models.CASCADE, related_name='logros'
+    )
+    fecha_obtencion  = models.DateTimeField(auto_now_add=True)
+    notificado       = models.BooleanField(default=False)
+    # True cuando el toast ya fue mostrado al usuario
+
+    class Meta:
+        unique_together = ('usuario', 'insignia')
+        ordering        = ['-fecha_obtencion']
+
+    def __str__(self):
+        return f'{self.usuario.email} — {self.insignia.nombre}'
