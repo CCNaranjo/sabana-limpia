@@ -3,136 +3,524 @@
 
 {% block extra_styles %}
 <style>
-.panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-.panel-header h1 {
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  color: var(--verde);
-}
-.filtros-bar {
-  display: flex;
-  gap: .75rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.filtros-bar select {
-  padding: .45rem .75rem;
-  border: 1.5px solid #d1d5db;
-  border-radius: 8px;
-  font-family: var(--font-body);
-  font-size: .9rem;
-  background: var(--blanco);
-}
-.btn-filtrar {
-  padding: .45rem 1rem;
-  background: var(--verde);
-  color: var(--blanco);
-  border: none;
-  border-radius: 8px;
-  font-family: var(--font-body);
-  font-weight: 600;
-  cursor: pointer;
-}
-.btn-limpiar {
-  padding: .45rem 1rem;
-  background: transparent;
-  color: var(--verde);
-  border: 1.5px solid var(--verde);
-  border-radius: 8px;
-  font-family: var(--font-body);
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-}
-table { width: 100%; border-collapse: collapse; background: var(--blanco); border-radius: var(--radio); overflow: hidden; box-shadow: var(--sombra); }
-thead { background: var(--verde); color: var(--blanco); }
-th, td { padding: .85rem 1rem; text-align: left; font-size: .9rem; }
-tbody tr:hover { background: #f0faf4; }
-tbody tr { border-bottom: 1px solid #e5e7eb; }
-.badge {
-  display: inline-block;
-  padding: .2rem .7rem;
-  border-radius: 12px;
-  font-size: .78rem;
-  font-weight: 600;
-}
-.badge-pendiente   { background: #e9ecef; color: #495057; }
-.badge-en_gestion  { background: #fff3cd; color: #856404; }
-.badge-resuelto    { background: #d8f3dc; color: #1b4332; }
-.badge-rechazado   { background: #fde8e8; color: #7f1d1d; }
-.btn-gestionar {
-  padding: .3rem .8rem;
-  background: var(--verde);
-  color: var(--blanco);
-  border-radius: 6px;
-  font-size: .82rem;
-  font-weight: 600;
-  text-decoration: none;
-}
-.btn-gestionar:hover { background: var(--verde-claro); color: var(--verde); }
-.empty-state { text-align: center; padding: 3rem; color: var(--gris-suave); }
+  /* ── Variables locales ─────────────────────────────────────────── */
+  :root {
+    --panel-verde:        #2d6a4f;
+    --panel-verde-light:  #40916c;
+    --panel-verde-hover:  #1b4332;
+    --panel-verde-tint:   #d8f3dc;
+    --panel-verde-subtle: #f0faf4;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+
+    --shadow-xs: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.05);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.1),  0 2px 6px rgba(0,0,0,.06);
+
+    --text-primary:   #111827;
+    --text-secondary: #4b5563;
+    --text-muted:     #9ca3af;
+    --border:         #e5e7eb;
+    --surface:        #ffffff;
+    --page-bg:        #f8faf9;
+  }
+
+  /* ── Reset / Base ──────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body { background: var(--page-bg); }
+
+  /* ── Layout del panel ─────────────────────────────────────────── */
+  .panel-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+  }
+
+  /* ── Cabecera ─────────────────────────────────────────────────── */
+  .panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .panel-header-left h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    color: var(--panel-verde);
+    margin: 0 0 .25rem;
+    line-height: 1.2;
+  }
+
+  .panel-header-left p {
+    font-size: .875rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* ── Barra de filtros ─────────────────────────────────────────── */
+  .filtros-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xs);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filtros-label {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: .6rem;
+    display: block;
+  }
+
+  .filtros-bar {
+    display: flex;
+    gap: .625rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filtros-bar select {
+    padding: .5rem .75rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: .875rem;
+    color: var(--text-primary);
+    background: var(--page-bg);
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .65rem center;
+    padding-right: 2.1rem;
+    min-width: 160px;
+  }
+
+  .filtros-bar select:focus {
+    outline: none;
+    border-color: var(--panel-verde-light);
+    box-shadow: 0 0 0 3px rgba(64,145,108,.15);
+  }
+
+  .btn-filtrar {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .5rem 1rem;
+    background: var(--panel-verde);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: .875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+    white-space: nowrap;
+  }
+
+  .btn-filtrar:hover  { background: var(--panel-verde-hover); }
+  .btn-filtrar:active { transform: scale(.97); }
+
+  .btn-limpiar {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .5rem 1rem;
+    background: transparent;
+    color: var(--panel-verde);
+    border: 1.5px solid var(--panel-verde);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: .875rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+
+  .btn-limpiar:hover {
+    background: var(--panel-verde-tint);
+    color: var(--panel-verde-hover);
+  }
+
+  /* ── Tabla ────────────────────────────────────────────────────── */
+  .tabla-wrapper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: var(--panel-verde);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  thead th {
+    padding: .875rem 1.1rem;
+    text-align: left;
+    font-family: var(--font-display);
+    font-size: .775rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.85);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: .9rem 1.1rem;
+    font-size: .875rem;
+    color: var(--text-primary);
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .12s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover      { background: var(--panel-verde-subtle); }
+
+  .td-id {
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    width: 52px;
+  }
+
+  .td-titulo {
+    font-weight: 500;
+    max-width: 260px;
+  }
+
+  .td-titulo span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .td-cat {
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  .td-email {
+    color: var(--text-secondary);
+    font-size: .82rem;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .td-fecha {
+    color: var(--text-muted);
+    font-size: .82rem;
+    white-space: nowrap;
+  }
+
+  /* ── Badges ───────────────────────────────────────────────────── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    padding: .28rem .72rem;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    white-space: nowrap;
+  }
+
+  .badge::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .badge-pendiente  { background: #f3f4f6; color: #374151; }
+  .badge-pendiente::before  { background: #9ca3af; }
+
+  .badge-en_gestion { background: #fffbeb; color: #92400e; }
+  .badge-en_gestion::before { background: #d97706; }
+
+  .badge-resuelto   { background: var(--panel-verde-tint); color: #1b4332; }
+  .badge-resuelto::before   { background: #2d6a4f; }
+
+  .badge-rechazado  { background: #fef2f2; color: #7f1d1d; }
+  .badge-rechazado::before  { background: #ef4444; }
+
+  /* ── Botón gestionar ─────────────────────────────────────────── */
+  .btn-gestionar {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .38rem .8rem;
+    background: var(--panel-verde-tint);
+    color: var(--panel-verde-hover);
+    border-radius: var(--radius-sm);
+    font-size: .8rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+
+  .btn-gestionar:hover {
+    background: var(--panel-verde);
+    color: #fff;
+  }
+
+  /* ── Empty state ─────────────────────────────────────────────── */
+  .empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .empty-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--panel-verde-tint);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+  }
+
+  .empty-icon svg {
+    width: 26px;
+    height: 26px;
+    stroke: var(--panel-verde);
+  }
+
+  .empty-state p {
+    color: var(--text-muted);
+    font-size: .9rem;
+    margin: 0;
+  }
+
+  /* ── Contador de resultados ──────────────────────────────────── */
+  .resultados-meta {
+    font-size: .8rem;
+    color: var(--text-muted);
+    margin-bottom: .75rem;
+    padding: 0 .25rem;
+  }
+
+  /* ── Vista responsive: tarjetas en móvil ─────────────────────── */
+  .mobile-cards { display: none; }
+
+  @media (max-width: 768px) {
+    .panel-wrapper { padding: 1.25rem 1rem 2.5rem; }
+
+    .panel-header { flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
+
+    .filtros-bar { flex-direction: column; align-items: stretch; }
+    .filtros-bar select { min-width: auto; width: 100%; }
+    .btn-filtrar, .btn-limpiar { justify-content: center; }
+
+    /* Ocultar tabla en móvil, mostrar tarjetas */
+    .tabla-wrapper { display: none; }
+    .mobile-cards  { display: flex; flex-direction: column; gap: .75rem; }
+
+    .reporte-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xs);
+      padding: 1rem 1.1rem;
+      transition: box-shadow .15s;
+    }
+
+    .reporte-card:hover { box-shadow: var(--shadow-sm); }
+
+    .reporte-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: .5rem;
+      margin-bottom: .65rem;
+    }
+
+    .reporte-card-id {
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .reporte-card-titulo {
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 .4rem;
+    }
+
+    .reporte-card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .35rem .75rem;
+      font-size: .78rem;
+      color: var(--text-secondary);
+      margin-bottom: .75rem;
+    }
+
+    .reporte-card-meta span::before {
+      content: attr(data-icon) ' ';
+    }
+
+    .reporte-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .panel-header-left h1 { font-size: 1.35rem; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="panel-header">
-  <h1>Panel — {{ request.user.municipio }}</h1>
+<div class="panel-wrapper">
 
-  <form method="get" class="filtros-bar">
-    <select name="estado">
-      <option value="">Todos los estados</option>
-      {% for val, label in estados %}
-        <option value="{{ val }}" {% if estado_actual == val %}selected{% endif %}>{{ label }}</option>
-      {% endfor %}
-    </select>
-    <select name="categoria">
-      <option value="">Todas las categorías</option>
-      {% for val, label in categorias %}
-        <option value="{{ val }}" {% if categoria_actual == val %}selected{% endif %}>{{ label }}</option>
-      {% endfor %}
-    </select>
-    <button type="submit" class="btn-filtrar">Filtrar</button>
-    <a href="{% url 'panel:lista' %}" class="btn-limpiar">Limpiar</a>
-  </form>
-</div>
+  <!-- Cabecera -->
+  <div class="panel-header">
+    <div class="panel-header-left">
+      <h1>Panel de operador</h1>
+      <p>{{ request.user.municipio }}</p>
+    </div>
+  </div>
 
-{% if reportes %}
-<table>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Título</th>
-      <th>Categoría</th>
-      <th>Ciudadano</th>
-      <th>Fecha</th>
-      <th>Estado</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for r in reportes %}
-    <tr>
-      <td>{{ r.id }}</td>
-      <td>{{ r.titulo }}</td>
-      <td>{{ r.get_categoria_display }}</td>
-      <td>{{ r.usuario.email }}</td>
-      <td>{{ r.created_at|date:"d/m/Y" }}</td>
-      <td><span class="badge badge-{{ r.estado }}">{{ r.get_estado_display }}</span></td>
-      <td><a href="{% url 'panel:detalle' r.pk %}" class="btn-gestionar">Gestionar</a></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<div class="empty-state">
-  <p>No hay reportes{% if estado_actual or categoria_actual %} con los filtros aplicados{% endif %} en {{ request.user.municipio }}.</p>
+  <!-- Filtros -->
+  <div class="filtros-card">
+    <span class="filtros-label">Filtrar reportes</span>
+    <form method="get" class="filtros-bar">
+      <select name="estado" aria-label="Filtrar por estado">
+        <option value="">Todos los estados</option>
+        {% for val, label in estados %}
+          <option value="{{ val }}" {% if estado_actual == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <select name="categoria" aria-label="Filtrar por categoría">
+        <option value="">Todas las categorías</option>
+        {% for val, label in categorias %}
+          <option value="{{ val }}" {% if categoria_actual == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn-filtrar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filtrar
+      </button>
+      <a href="{% url 'panel:lista' %}" class="btn-limpiar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Limpiar
+      </a>
+    </form>
+  </div>
+
+  {% if reportes %}
+    <p class="resultados-meta">{{ reportes|length }} reporte{{ reportes|length|pluralize }} encontrado{{ reportes|length|pluralize }}</p>
+
+    <!-- Tabla (desktop) -->
+    <div class="tabla-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Título</th>
+            <th>Categoría</th>
+            <th>Ciudadano</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reportes %}
+          <tr>
+            <td class="td-id">#{{ r.id }}</td>
+            <td class="td-titulo"><span title="{{ r.titulo }}">{{ r.titulo }}</span></td>
+            <td class="td-cat">{{ r.get_categoria_display }}</td>
+            <td class="td-email" title="{{ r.usuario.email }}">{{ r.usuario.email }}</td>
+            <td class="td-fecha">{{ r.created_at|date:"d/m/Y" }}</td>
+            <td><span class="badge badge-{{ r.estado }}">{{ r.get_estado_display }}</span></td>
+            <td>
+              <a href="{% url 'panel:detalle' r.pk %}" class="btn-gestionar">
+                Gestionar
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tarjetas (móvil) -->
+    <div class="mobile-cards" aria-label="Lista de reportes">
+      {% for r in reportes %}
+      <div class="reporte-card">
+        <div class="reporte-card-top">
+          <span class="reporte-card-id">#{{ r.id }}</span>
+          <span class="badge badge-{{ r.estado }}">{{ r.get_estado_display }}</span>
+        </div>
+        <p class="reporte-card-titulo">{{ r.titulo }}</p>
+        <div class="reporte-card-meta">
+          <span>{{ r.get_categoria_display }}</span>
+          <span>{{ r.usuario.email }}</span>
+          <span>{{ r.created_at|date:"d/m/Y" }}</span>
+        </div>
+        <div class="reporte-card-footer">
+          <a href="{% url 'panel:detalle' r.pk %}" class="btn-gestionar">
+            Gestionar
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+  <div class="tabla-wrapper">
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <p>No hay reportes{% if estado_actual or categoria_actual %} con los filtros aplicados{% endif %} en {{ request.user.municipio }}.</p>
+    </div>
+  </div>
+  {% endif %}
+
 </div>
-{% endif %}
 {% endblock %}

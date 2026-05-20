@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'usuarios',      
+    'usuarios.apps.UsuariosConfig',      
     'reportes',      
     'residuos', 
     'panel',
@@ -67,6 +67,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'config.context_processors.tawk_settings',
             ],
         },
     },
@@ -143,3 +144,6 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+
+TAWK_PROPERTY_ID = config('TAWK_PROPERTY_ID', default='')
+TAWK_WIDGET_ID   = config('TAWK_WIDGET_ID', default='default')

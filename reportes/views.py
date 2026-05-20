@@ -12,6 +12,8 @@ Design decisions:
 """
 
 import logging
+import json
+from django.http import JsonResponse
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -157,8 +159,6 @@ class ConfirmacionView(CiudadanoRequeridoMixin, View):
 # T-23 — Endpoint JSON para el mapa
 # ---------------------------------------------------------------------------
 
-from django.http import JsonResponse
-
 class MapaJsonView(View):
     """
     GET /api/reportes/mapa/
@@ -187,3 +187,13 @@ class MapaView(View):
 
     def get(self, request):
         return render(request, self.template_name)
+    
+@login_required
+def mapa_personal_json(request):
+    """Devuelve los reportes del usuario logueado para el mapa de Mi Impacto."""
+    puntos = (
+        Reporte.objects
+        .filter(usuario=request.user)
+        .values('id', 'titulo', 'latitud', 'longitud', 'categoria', 'estado', 'municipio')
+    )
+    return JsonResponse({'puntos': list(puntos)})

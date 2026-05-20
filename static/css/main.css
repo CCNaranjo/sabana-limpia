@@ -1,0 +1,155 @@
+/* ── Dashboard Mi Impacto ────────────────────────────────── */
+.impacto-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.impacto-header h1 { color: #1A5C2A; font-size: 1.8rem; }
+.subtitulo         { color: #555; margin-top: .25rem; }
+
+.frase-impacto {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  background: #D6ECD9;
+  border-left: 4px solid #1A5C2A;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+}
+
+/* Tarjetas de métricas */
+.metricas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.metrica-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.metrica-icono { font-size: 2rem; margin-bottom: .5rem; }
+.metrica-valor { font-size: 2.2rem; font-weight: 700; color: #1A5C2A; }
+.metrica-label { font-size: .9rem; color: #666; margin-top: .25rem; }
+.metrica-sub   { font-size: .8rem; color: #888; margin-top: .25rem; }
+
+.metrica-tendencia { font-size: .8rem; margin-top: .4rem; font-weight: 600; }
+.metrica-tendencia.positiva { color: #27ae60; }
+.metrica-tendencia.negativa { color: #e74c3c; }
+
+.residuos-detalle { font-size: .78rem; color: #666; margin-top: .3rem; }
+
+/* Sección de insignias */
+.insignias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.insignia-card {
+  border-radius: 12px;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  transition: transform .2s;
+}
+
+.insignia-card:hover { transform: translateY(-4px); }
+
+.insignia-emoji { font-size: 2.2rem; margin-bottom: .5rem; }
+.insignia-nombre { font-weight: 700; font-size: .9rem; }
+.insignia-desc   { font-size: .75rem; color: #555; margin-top: .35rem; line-height: 1.35; }
+.insignia-fecha  { font-size: .7rem; color: #999; margin-top: .5rem; }
+
+/* Niveles de insignia */
+.badge-nivel-1 { background: #FFF8F0; border-color: #CD7F32; } /* Bronce */
+.badge-nivel-2 { background: #F8F8F8; border-color: #C0C0C0; } /* Plata  */
+.badge-nivel-3 { background: #FFFBE6; border-color: #FFD700; } /* Oro    */
+.badge-pionero { background: #F5EEFF; border-color: #9b59b6;
+                 box-shadow: 0 0 16px rgba(155,89,182,.35); } /* Púrpura */
+
+.sin-insignias {
+  background: #f9f9f9;
+  border: 1px dashed #ccc;
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+  color: #888;
+}
+
+/* Misterio */
+.misterio-section {
+  background: linear-gradient(135deg, #1A3A5C 0%, #2D8A45 100%);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  color: #fff;
+}
+
+.misterio-section h2 { color: #fff; }
+.misterio-intro { color: rgba(255,255,255,.8); font-style: italic; }
+
+.pistas-lista { list-style: none; padding: 0; margin-top: 1rem; }
+.pista-item   { padding: .5rem 0; color: rgba(255,255,255,.9); font-size: .95rem; }
+
+/* Contribución global */
+.contribucion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.contrib-item {
+  background: #EEF7EE;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.contrib-valor { display: block; font-size: 1.8rem; font-weight: 700; color: #1A5C2A; }
+.contrib-label { display: block; font-size: .85rem; color: #555; margin-top: .25rem; }
+.pct-contribucion { margin-top: 1rem; font-size: .95rem; color: #444; text-align: center; }
+
+/* Navegación rápida */
+.nav-rapida { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn-nav {
+  padding: .65rem 1.25rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 1.5px solid #1A5C2A;
+  color: #1A5C2A;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background .2s, color .2s;
+}
+
+.btn-nav:hover,
+.btn-nav.btn-primario {
+  background: #1A5C2A;
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .metricas-grid       { grid-template-columns: 1fr 1fr; }
+  .insignias-grid      { grid-template-columns: 1fr 1fr; }
+  .contribucion-grid   { grid-template-columns: 1fr; }
+  .nav-rapida          { flex-direction: column; }
+}
