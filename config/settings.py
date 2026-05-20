@@ -194,5 +194,6 @@ LOGGING = {
         },
     },
 }
+
 TAWK_PROPERTY_ID = config('TAWK_PROPERTY_ID', default='')
 TAWK_WIDGET_ID   = config('TAWK_WIDGET_ID', default='default')

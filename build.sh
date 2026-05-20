@@ -10,4 +10,8 @@ python manage.py migrate --noinput
 echo ">>> Recopilando archivos estáticos..."
 python manage.py collectstatic --noinput
 
+python manage.py loaddata usuarios/fixtures/insignias.json
+
+python manage.py seed_data
+
 echo ">>> Build completado exitosamente"
